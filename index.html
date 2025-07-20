@@ -5,167 +5,149 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Uptime Monitor - 24/7 Website Monitoring</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" xintegrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-        .gradient-bg {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-        }
-        .card {
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            background-color: rgba(255, 255, 255, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-        }
-        .btn-primary {
-            background-color: #3b82f6; /* blue-500 */
-            transition: background-color 0.3s ease;
-        }
-        .btn-primary:hover {
-            background-color: #2563eb; /* blue-600 */
-        }
-        .form-input {
-            background-color: rgba(255, 255, 255, 0.8);
-        }
+        body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); }
+        .card { backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); background-color: rgba(255, 255, 255, 0.7); border: 1px solid rgba(255, 255, 255, 0.3); }
+        .form-container { display: block; }
+        .hidden-form { display: none; }
     </style>
 </head>
-<body class="gradient-bg">
+<body class="min-h-screen flex flex-col items-center justify-center p-4">
 
-    <div class="min-h-screen flex flex-col items-center justify-center p-4">
-        <div class="w-full max-w-2xl mx-auto">
+    <div class="w-full max-w-md mx-auto">
+        <header class="text-center mb-8">
+            <i class="fas fa-satellite-dish text-5xl text-blue-500 mb-4"></i>
+            <h1 class="text-4xl font-bold text-gray-800">Uptime Monitor</h1>
+            <p class="text-gray-600 mt-2">Login or create an account to start monitoring.</p>
+        </header>
 
-            <!-- Header -->
-            <header class="text-center mb-8">
-                <i class="fas fa-satellite-dish text-5xl text-blue-500 mb-4"></i>
-                <h1 class="text-4xl md:text-5xl font-bold text-gray-800">Uptime Monitor</h1>
-                <p class="text-gray-600 mt-2 text-lg">Get free, 24/7 email alerts the moment your website goes down.</p>
-            </header>
-
-            <!-- Main Card -->
-            <main id="monitor-card" class="card rounded-2xl shadow-2xl p-6 md:p-8">
-                <form id="monitor-form">
-                    <h2 class="text-2xl font-semibold text-gray-700 mb-6 text-center">Start Monitoring in 30 Seconds</h2>
-                    <div class="space-y-6">
+        <main class="card rounded-2xl shadow-2xl p-8">
+            <!-- Login Form -->
+            <div id="login-container" class="form-container">
+                <form id="login-form">
+                    <h2 class="text-2xl font-semibold text-gray-700 mb-6 text-center">Login</h2>
+                    <div class="space-y-4">
                         <div>
-                            <label for="website-url" class="block text-sm font-medium text-gray-700 mb-1">Website URL</label>
-                            <div class="relative">
-                                <i class="fas fa-globe absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                                <input type="url" id="website-url" name="url" placeholder="https://your-website.com" required class="form-input w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                            </div>
+                            <label for="login-email" class="block text-sm font-medium text-gray-700">Email</label>
+                            <input type="email" id="login-email" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm">
                         </div>
                         <div>
-                            <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email for Alerts</label>
-                            <div class="relative">
-                                <i class="fas fa-envelope absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                                <input type="email" id="email" name="email" placeholder="you@example.com" required class="form-input w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                            </div>
+                            <label for="login-password" class="block text-sm font-medium text-gray-700">Password</label>
+                            <input type="password" id="login-password" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm">
                         </div>
                     </div>
-                    <div class="mt-8">
-                        <button type="submit" id="submit-button" class="btn-primary w-full text-white font-bold py-3 px-4 rounded-lg shadow-lg transform hover:scale-105 transition-transform duration-300">
-                            <span id="button-text">Start Free Monitoring</span>
-                            <i id="button-spinner" class="fas fa-spinner fa-spin hidden ml-2"></i>
-                        </button>
+                    <div class="mt-6">
+                        <button type="submit" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg">Login</button>
                     </div>
                 </form>
-                <!-- Message area for success/error -->
-                <div id="message-area" class="text-center mt-6"></div>
-            </main>
+                <p class="text-center text-sm text-gray-600 mt-4">
+                    No account? <a href="#" id="show-register" class="font-medium text-blue-600 hover:text-blue-500">Register here</a>
+                </p>
+            </div>
 
-            <!-- Features -->
-            <section class="mt-12 text-center">
-                <h3 class="text-2xl font-bold text-gray-700 mb-6">Why Use Uptime Monitor?</h3>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-gray-600">
-                    <div class="feature">
-                        <i class="fas fa-server text-3xl text-blue-500"></i>
-                        <h4 class="font-semibold mt-2">Always-On</h4>
-                        <p>Runs 24/7 on our servers, not your browser.</p>
+            <!-- Register Form -->
+            <div id="register-container" class="hidden-form">
+                <form id="register-form">
+                    <h2 class="text-2xl font-semibold text-gray-700 mb-6 text-center">Create Account</h2>
+                    <div class="space-y-4">
+                        <div>
+                            <label for="register-email" class="block text-sm font-medium text-gray-700">Email</label>
+                            <input type="email" id="register-email" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm">
+                        </div>
+                        <div>
+                            <label for="register-password" class="block text-sm font-medium text-gray-700">Password</label>
+                            <input type="password" id="register-password" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm">
+                        </div>
                     </div>
-                    <div class="feature">
-                        <i class="fas fa-bell text-3xl text-blue-500"></i>
-                        <h4 class="font-semibold mt-2">Instant Alerts</h4>
-                        <p>Receive an email the minute trouble is detected.</p>
+                    <div class="mt-6">
+                        <button type="submit" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg">Register</button>
                     </div>
-                    <div class="feature">
-                        <i class="fas fa-shield-alt text-3xl text-blue-500"></i>
-                        <h4 class="font-semibold mt-2">Completely Free</h4>
-                        <p>No hidden costs or credit cards required.</p>
-                    </div>
-                </div>
-            </section>
-        </div>
+                </form>
+                <p class="text-center text-sm text-gray-600 mt-4">
+                    Already have an account? <a href="#" id="show-login" class="font-medium text-blue-600 hover:text-blue-500">Login here</a>
+                </p>
+            </div>
+             <div id="message-area" class="text-center mt-4 text-red-600"></div>
+        </main>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const form = document.getElementById('monitor-form');
-            const messageArea = document.getElementById('message-area');
-            const submitButton = document.getElementById('submit-button');
-            const buttonText = document.getElementById('button-text');
-            const buttonSpinner = document.getElementById('button-spinner');
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+        import { getFirestore, collection, query, where, onSnapshot, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
-            form.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                
-                // --- UI Feedback: Show loading state ---
-                messageArea.innerHTML = '';
-                submitButton.disabled = true;
-                buttonText.textContent = 'Submitting...';
-                buttonSpinner.classList.remove('hidden');
+        // IMPORTANT: Replace with your project's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyD-hl1Z4xs0QBi6TRbEqCEPzymF-Hp_5VY",
+            authDomain: "uptime-monitor-2025.firebaseapp.com",
+            projectId: "uptime-monitor-2025",
+            storageBucket: "uptime-monitor-2025.firebasestorage.app",
+            messagingSenderId: "1028391210140",
+            appId: "1:1028391210140:web:6a18db0329c760e007f159",
+            measurementId: "G-F4PE1SG04W"
+        };
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const analytics = getAnalytics(app);
 
-                const formData = new FormData(form);
-                const data = Object.fromEntries(formData.entries());
+        // Redirect if user is already logged in
+        onAuthStateChanged(auth, user => {
+            if (user) {
+                window.location.href = '/dashboard.html';
+            }
+        });
 
-                try {
-                    // In a real application, this URL would point to your serverless function endpoint.
-                    // For example: https://your-site.vercel.app/api/add-monitor
-                    const apiEndpoint = '/api/add-monitor'; 
+        const loginForm = document.getElementById('login-form');
+        const registerForm = document.getElementById('register-form');
+        const messageArea = document.getElementById('message-area');
 
-                    const response = await fetch(apiEndpoint, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify(data),
-                    });
+        // Login logic
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = loginForm['login-email'].value;
+            const password = loginForm['login-password'].value;
+            signInWithEmailAndPassword(auth, email, password)
+                .then(cred => {
+                    window.location.href = '/dashboard.html';
+                })
+                .catch(err => {
+                    messageArea.textContent = err.message;
+                });
+        });
 
-                    const result = await response.json();
+        // Register logic
+        registerForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = registerForm['register-email'].value;
+            const password = registerForm['register-password'].value;
+            createUserWithEmailAndPassword(auth, email, password)
+                .then(cred => {
+                    window.location.href = '/dashboard.html';
+                })
+                .catch(err => {
+                    messageArea.textContent = err.message;
+                });
+        });
 
-                    if (!response.ok) {
-                        // Handle errors from the server (e.g., invalid email)
-                        throw new Error(result.message || 'An unknown error occurred.');
-                    }
-                    
-                    // --- UI Feedback: Show success message ---
-                    messageArea.innerHTML = `
-                        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg relative" role="alert">
-                            <strong class="font-bold">Success!</strong>
-                            <span class="block sm:inline">We're now monitoring ${data.url}. Check your inbox for a confirmation!</span>
-                        </div>
-                    `;
-                    form.reset();
+        // Toggle between forms
+        const showRegisterLink = document.getElementById('show-register');
+        const showLoginLink = document.getElementById('show-login');
+        const loginContainer = document.getElementById('login-container');
+        const registerContainer = document.getElementById('register-container');
 
-                } catch (error) {
-                    // --- UI Feedback: Show error message ---
-                    // This block will also catch network errors if the API endpoint doesn't exist yet.
-                    messageArea.innerHTML = `
-                        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg relative" role="alert">
-                            <strong class="font-bold">Error:</strong>
-                            <span class="block sm:inline">${error.message} (Note: The back-end for this demo is not yet active).</span>
-                        </div>
-                    `;
-                } finally {
-                    // --- UI Feedback: Reset button state ---
-                    submitButton.disabled = false;
-                    buttonText.textContent = 'Start Free Monitoring';
-                    buttonSpinner.classList.add('hidden');
-                }
-            });
+        showRegisterLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            loginContainer.classList.add('hidden-form');
+            registerContainer.classList.remove('hidden-form');
+        });
+
+        showLoginLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            registerContainer.classList.add('hidden-form');
+            loginContainer.classList.remove('hidden-form');
         });
     </script>
 </body>
