@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,24 +8,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-
-        .status-up {
-            color: #16a34a;
-        }
-
-        .status-down {
-            color: #dc2626;
-        }
-
-        .status-pending {
-            color: #f59e0b;
-        }
+        body { font-family: 'Inter', sans-serif; }
+        .status-up { color: #16a34a; }
+        .status-down { color: #dc2626; }
+        .status-pending { color: #f59e0b; }
     </style>
 </head>
-
 <body class="bg-gray-50">
 
     <!-- Navbar -->
@@ -48,34 +35,30 @@
     <!-- Main Content -->
     <main class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
         <div class="bg-white p-6 rounded-lg shadow mb-6">
-            <h2 class="text-2xl font-semibold text-gray-700 mb-4">Add a New Monitor</h2>
-            <form id="add-monitor-form" class="flex items-end gap-4">
+             <h2 class="text-2xl font-semibold text-gray-700 mb-4">Add a New Monitor</h2>
+             <form id="add-monitor-form" class="flex items-end gap-4">
                 <div class="flex-grow">
                     <label for="website-url" class="block text-sm font-medium text-gray-700">Website URL</label>
-                    <input type="url" id="website-url" placeholder="https://your-website.com" required
-                        class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm">
+                    <input type="url" id="website-url" placeholder="https://your-website.com" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm">
                 </div>
-                <button type="submit"
-                    class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg shadow h-10"><i
-                        class="fas fa-plus mr-2"></i>Add</button>
-            </form>
-            <div id="form-message-area" class="mt-3"></div>
+                <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg shadow h-10"><i class="fas fa-plus mr-2"></i>Add</button>
+             </form>
+             <div id="form-message-area" class="mt-3 text-red-600"></div>
         </div>
 
         <div id="monitors-container" class="bg-white p-6 rounded-lg shadow">
             <div class="flex justify-between items-center mb-4">
-                <h1 class="text-2xl font-bold text-gray-900">Your Monitored Sites</h1>
-                <button id="refresh-button" class="text-sm text-gray-500 hover:text-blue-500"><i
-                        class="fas fa-sync-alt mr-1"></i>Refresh</button>
+                 <h1 class="text-2xl font-bold text-gray-900">Your Monitored Sites</h1>
+                 <button id="refresh-button" class="text-sm text-gray-500 hover:text-blue-500"><i class="fas fa-sync-alt mr-1"></i>Refresh</button>
             </div>
             <div id="loading-state" class="text-center py-8">
                 <i class="fas fa-spinner fa-spin text-3xl text-gray-400"></i>
                 <p class="mt-2 text-gray-600">Loading your monitors...</p>
             </div>
             <div id="empty-state" class="hidden text-center py-8">
-                <i class="fas fa-eye-slash text-4xl text-gray-400 mb-4"></i>
-                <h3 class="text-xl font-semibold text-gray-700">No monitors yet.</h3>
-                <p class="text-gray-500">Use the form above to add your first site.</p>
+                 <i class="fas fa-eye-slash text-4xl text-gray-400 mb-4"></i>
+                 <h3 class="text-xl font-semibold text-gray-700">No monitors yet.</h3>
+                 <p class="text-gray-500">Use the form above to add your first site.</p>
             </div>
             <div id="monitors-list" class="space-y-4"></div>
         </div>
@@ -86,20 +69,20 @@
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
         import { getFirestore, collection, query, where, onSnapshot, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
-        // IMPORTANT: Replace with your project's Firebase configuration
+        // Your specific Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyD-hl1Z4xs0QBi6TRbEqCEPzymF-Hp_5VY",
             authDomain: "uptime-monitor-2025.firebaseapp.com",
             projectId: "uptime-monitor-2025",
-            storageBucket: "uptime-monitor-2025.firebasestorage.app",
+            storageBucket: "uptime-monitor-2025.appspot.com",
             messagingSenderId: "1028391210140",
             appId: "1:1028391210140:web:6a18db0329c760e007f159",
             measurementId: "G-F4PE1SG04W"
         };
+
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-        const analytics = getAnalytics(app);
 
         const monitorsContainer = document.getElementById('monitors-list');
         const loadingState = document.getElementById('loading-state');
@@ -108,10 +91,17 @@
         const logoutButton = document.getElementById('logout-button');
         const addMonitorForm = document.getElementById('add-monitor-form');
         const formMessageArea = document.getElementById('form-message-area');
+        const refreshButton = document.getElementById('refresh-button');
 
         let currentUser;
+        let unsubscribe; // To hold the listener function
 
         logoutButton.addEventListener('click', () => signOut(auth));
+        refreshButton.addEventListener('click', () => {
+            if (currentUser) {
+                fetchMonitors(currentUser.uid);
+            }
+        });
 
         onAuthStateChanged(auth, user => {
             if (user) {
@@ -125,8 +115,9 @@
 
         addMonitorForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const url = addMonitorForm['website-url'].value;
-            if (!currentUser) return;
+            const urlInput = addMonitorForm['website-url'];
+            const url = urlInput.value.trim();
+            if (!currentUser || !url) return;
 
             try {
                 await addDoc(collection(db, "monitors"), {
@@ -144,14 +135,27 @@
         });
 
         function fetchMonitors(userId) {
+            // Unsubscribe from previous listener if it exists
+            if (unsubscribe) {
+                unsubscribe();
+            }
+            loadingState.style.display = 'block';
+            emptyState.style.display = 'none';
+            monitorsContainer.innerHTML = '';
+
             const q = query(collection(db, "monitors"), where("userId", "==", userId));
-            onSnapshot(q, (snapshot) => {
-                loadingState.classList.add('hidden');
+            unsubscribe = onSnapshot(q, (snapshot) => {
+                loadingState.style.display = 'none';
                 monitorsContainer.innerHTML = '';
-                emptyState.classList.toggle('hidden', !snapshot.empty);
+                emptyState.style.display = snapshot.empty ? 'block' : 'none';
+                
                 snapshot.forEach(doc => {
                     monitorsContainer.innerHTML += createMonitorCard(doc.id, doc.data());
                 });
+            }, (error) => {
+                console.error("Error fetching monitors:", error);
+                loadingState.style.display = 'none';
+                monitorsContainer.innerHTML = `<p class="text-red-500">Error loading data. Please check console.</p>`;
             });
         }
 
@@ -186,5 +190,4 @@
         }
     </script>
 </body>
-
 </html>
