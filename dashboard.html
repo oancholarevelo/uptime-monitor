@@ -91,7 +91,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
-        import { getFirestore, collection, query, where, onSnapshot, addDoc, serverTimestamp, getDocs, orderBy, limit } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+        import { getFirestore, collection, query, where, onSnapshot, addDoc, serverTimestamp, getDocs, orderBy, limit, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
         // Your specific Firebase configuration
         const firebaseConfig = {
@@ -209,16 +209,22 @@
                             <p class="font-medium text-md ${statusClass}"><i class="fas ${statusIcon} mr-2"></i>${statusText}</p>
                             <p class="text-xs text-gray-400">Response: ${responseTime}</p>
                         </div>
-                        <button data-id="${id}" class="view-history-button bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-3 rounded-lg text-sm">History</button>
+                        <div class="flex items-center gap-2">
+                           <button data-id="${id}" class="view-history-button bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-3 rounded-lg text-sm">History</button>
+                           <button data-id="${id}" data-url="${monitor.url}" class="delete-monitor-button text-red-500 hover:text-red-700 font-bold py-2 px-3 rounded-lg text-sm"><i class="fas fa-trash-alt"></i></button>
+                        </div>
                     </div>
                 </div>
             `;
         }
         
-        // Event delegation for history buttons
+        // Event delegation for history and delete buttons
         monitorsListContainer.addEventListener('click', async (e) => {
-            if (e.target.classList.contains('view-history-button')) {
-                const monitorId = e.target.dataset.id;
+            const historyButton = e.target.closest('.view-history-button');
+            const deleteButton = e.target.closest('.delete-monitor-button');
+
+            if (historyButton) {
+                const monitorId = historyButton.dataset.id;
                 historyContent.innerHTML = '<p class="text-center text-gray-500">Loading history...</p>';
                 historyModal.style.display = 'block';
 
@@ -244,6 +250,20 @@
                         </div>
                     `;
                 }).join('');
+            }
+
+            if (deleteButton) {
+                const monitorId = deleteButton.dataset.id;
+                const monitorUrl = deleteButton.dataset.url;
+                if (confirm(`Are you sure you want to delete the monitor for "${monitorUrl}"? This action cannot be undone.`)) {
+                    try {
+                        await deleteDoc(doc(db, "monitors", monitorId));
+                        // The UI will update automatically thanks to onSnapshot
+                    } catch (error) {
+                        console.error("Error removing monitor: ", error);
+                        alert("There was an error deleting the monitor. Please try again.");
+                    }
+                }
             }
         });
     </script>
