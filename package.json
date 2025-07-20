@@ -1,0 +1,12 @@
+{
+  "name": "uptime-monitor-backend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Backend services for the uptime monitor.",
+  "scripts": {
+    "start": "node api/cron.js"
+  },
+  "dependencies": {
+    "firebase-admin": "^11.5.0"
+  }
+}
