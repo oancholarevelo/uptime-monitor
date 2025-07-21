@@ -9,12 +9,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
     <style>
         body { font-family: 'Inter', sans-serif; }
-        .gradient-bg { background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); }
         .feature-card { transition: transform 0.3s ease, box-shadow 0.3s ease; }
         .feature-card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800">
+<body class="bg-white text-gray-800">
 
     <header class="bg-white shadow-sm sticky top-0 z-50">
         <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
@@ -23,7 +22,7 @@
                 <span class="font-bold text-xl ml-2 text-gray-900">SitePulse</span>
             </div>
             <div>
-                <a href="/login.html" class="bg-gray-800 hover:bg-gray-700 text-white font-bold py-2 px-5 rounded-lg transition duration-300">
+                <a href="/login.html" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-5 rounded-lg transition duration-300">
                     Sign In
                 </a>
             </div>
@@ -31,7 +30,7 @@
     </header>
 
     <main>
-        <section class="gradient-bg py-20 sm:py-32">
+        <section class="bg-white py-20 sm:py-32">
             <div class="container mx-auto px-6 text-center">
                 <h1 class="text-4xl md:text-6xl font-extrabold text-gray-900 leading-tight">
                     Reliable Website Monitoring.
@@ -42,6 +41,38 @@
                 <a href="/login.html" class="mt-8 inline-block bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-8 rounded-lg text-lg transition duration-300 shadow-lg">
                     Start Monitoring for Free
                 </a>
+            </div>
+        </section>
+
+        <section class="py-20 bg-gray-50">
+            <div class="container mx-auto px-6">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-900">How It Works</h2>
+                    <p class="text-gray-600 mt-2">Get set up in three simple steps.</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
+                    <div>
+                        <div class="flex items-center justify-center h-16 w-16 mx-auto rounded-full bg-red-100 text-red-600 mb-4">
+                            <i class="fas fa-plus text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">1. Add Your Website</h3>
+                        <p class="text-gray-600">Simply enter the URL of the website you want to monitor. No complex setup required.</p>
+                    </div>
+                    <div>
+                        <div class="flex items-center justify-center h-16 w-16 mx-auto rounded-full bg-red-100 text-red-600 mb-4">
+                            <i class="fas fa-bell text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">2. We Monitor It 24/7</h3>
+                        <p class="text-gray-600">Our servers check your site every 5 minutes. If we detect an issue, we instantly verify it from another location.</p>
+                    </div>
+                    <div>
+                        <div class="flex items-center justify-center h-16 w-16 mx-auto rounded-full bg-red-100 text-red-600 mb-4">
+                            <i class="fas fa-envelope text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-2">3. Get Notified Instantly</h3>
+                        <p class="text-gray-600">If your site goes down, we send you an immediate email alert so you can take action right away.</p>
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -100,9 +131,27 @@
     </main>
 
     <footer class="bg-gray-800 text-white">
-        <div class="container mx-auto px-6 py-8 text-center">
-            <p>&copy; 2025 SitePulse. All rights reserved.</p>
-            <p class="text-sm text-gray-400 mt-2">A reliable service to keep you online.</p>
+        <div class="container mx-auto px-6 py-12">
+            <div class="text-center">
+                <h3 class="text-lg font-semibold">Support SitePulse</h3>
+                <p class="text-gray-400 mt-2 max-w-2xl mx-auto">
+                    If you find this tool useful and want to support its continued development and free availability, please consider contributing. Your support helps cover server costs and allows me to dedicate more time to new features.
+                </p>
+                <div class="mt-4 flex justify-center space-x-6">
+                    <a href="https://github.com/oancholarevelo" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-white transition">
+                        <i class="fab fa-github text-2xl"></i>
+                    </a>
+                    <a href="https://www.linkedin.com/in/oliver-revelo/" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-white transition">
+                        <i class="fab fa-linkedin text-2xl"></i>
+                    </a>
+                    <a href="https://oliverrevelo.vercel.app/" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-white transition">
+                        <i class="fas fa-globe text-2xl"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="mt-8 border-t border-gray-700 pt-8 text-center">
+                <p>&copy; 2025 SitePulse. All rights reserved.</p>
+            </div>
         </div>
     </footer>
 

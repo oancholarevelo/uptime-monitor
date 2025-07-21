@@ -10,7 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f0f2f5; }
+        body { font-family: 'Inter', sans-serif; }
         .status-up { color: #16a34a; }
         .status-down { color: #dc2626; }
         .status-pending { color: #f59e0b; }
@@ -32,7 +32,7 @@
         }
     </style>
 </head>
-<body class="bg-gray-100">
+<body class="bg-gray-50 flex flex-col min-h-screen">
 
     <nav class="bg-white shadow-md">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -51,7 +51,7 @@
         </div>
     </nav>
 
-    <main class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+    <main class="flex-grow max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 w-full">
         <div class="bg-white p-6 rounded-xl shadow-md mb-8">
              <h2 class="text-xl font-semibold text-gray-800 mb-4">Add New Monitor</h2>
              <form id="add-monitor-form" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
@@ -90,22 +90,32 @@
     </main>
 
     <div id="history-modal" class="modal">
-        <div class="modal-content">
-            <div class="flex justify-between items-center mb-4 pb-4 border-b">
-                <div>
-                    <h2 class="text-xl font-bold text-gray-800">Uptime History</h2>
-                    <p id="modal-monitor-url" class="text-sm text-gray-600"></p>
+        </div>
+
+    <footer class="bg-gray-800 text-white mt-12">
+        <div class="container mx-auto px-6 py-12">
+            <div class="text-center">
+                <h3 class="text-lg font-semibold">Support SitePulse</h3>
+                <p class="text-gray-400 mt-2 max-w-2xl mx-auto">
+                    If you find this tool useful and want to support its continued development and free availability, please consider contributing. Your support helps cover server costs and allows me to dedicate more time to new features.
+                </p>
+                <div class="mt-4 flex justify-center space-x-6">
+                    <a href="https://github.com/oancholarevelo" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-white transition">
+                        <i class="fab fa-github text-2xl"></i>
+                    </a>
+                    <a href="https://www.linkedin.com/in/oliver-revelo/" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-white transition">
+                        <i class="fab fa-linkedin text-2xl"></i>
+                    </a>
+                    <a href="https://oliverrevelo.vercel.app/" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-white transition">
+                        <i class="fas fa-globe text-2xl"></i>
+                    </a>
                 </div>
-                <button id="close-modal-button" class="text-2xl font-bold text-gray-500 hover:text-red-500 transition">&times;</button>
             </div>
-            <div id="history-content">
-                <div class="w-full h-64 flex items-center justify-center">
-                    <p id="chart-loading" class="text-center text-gray-500">Loading history data...</p>
-                    <canvas id="uptime-chart"></canvas>
-                </div>
+            <div class="mt-8 border-t border-gray-700 pt-8 text-center">
+                <p>&copy; 2025 SitePulse. All rights reserved.</p>
             </div>
         </div>
-    </div>
+    </footer>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
