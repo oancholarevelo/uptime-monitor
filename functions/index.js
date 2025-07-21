@@ -2,9 +2,10 @@ const functions = require("firebase-functions/v1");
 const admin = require("firebase-admin");
 const axios = require("axios");
 const tls = require('tls');
+const { getFirestore, Timestamp } = require("firebase-admin/firestore");
 
 admin.initializeApp();
-const db = admin.firestore();
+const db = getFirestore();
 
 /**
  * NEW: Triggered function that performs an initial check when a new monitor is created.
@@ -97,6 +98,17 @@ const getSslExpiry = (hostname) => {
  * @param {object} monitor The monitor data object.
  */
 const checkAndUpdateStatus = async (docId, monitor) => {
+    const now = Timestamp.now();
+    const maintenanceQuery = db.collection(`monitors/${docId}/maintenance`)
+                               .where('start', '<=', now.toDate())
+                               .where('end', '>=', now.toDate());
+    const maintenanceSnapshot = await maintenanceQuery.get();
+
+    if (!maintenanceSnapshot.empty) {
+        console.log(`Skipping check for ${monitor.url} due to active maintenance window.`);
+        return;
+    }
+
     const {url, keyword} = monitor;
     const monitorRef = db.collection("monitors").doc(docId);
     const logRef = monitorRef.collection("logs");
