@@ -145,7 +145,19 @@
                     window.location.href = '/dashboard';
                 })
                 .catch(err => {
-                    messageArea.textContent = err.message;
+                    switch (err.code) {
+                        case 'auth/user-not-found':
+                            messageArea.textContent = 'No user found with this email.';
+                            break;
+                        case 'auth/wrong-password':
+                            messageArea.textContent = 'Incorrect password.';
+                            break;
+                        case 'auth/invalid-credential':
+                            messageArea.textContent = 'Invalid email or password.';
+                            break;
+                        default:
+                            messageArea.textContent = 'An error occurred. Please try again.';
+                    }
                 });
         });
 
