@@ -220,7 +220,8 @@
 
             let sslText = 'N/A';
             let sslClass = 'text-gray-400';
-            if (monitor.sslDaysRemaining !== null) {
+            // FIX: Check if the value is a number to prevent "undefined" from showing.
+            if (typeof monitor.sslDaysRemaining === 'number') {
                 if (monitor.sslDaysRemaining < 0) {
                     sslText = 'Expired';
                     sslClass = 'ssl-error';
