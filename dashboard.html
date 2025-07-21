@@ -166,6 +166,28 @@
             </div>
         </div>
     </div>
+    
+    <div id="delete-confirm-modal" class="modal">
+        <div class="modal-content" style="max-width: 450px;">
+            <div class="text-center">
+                <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
+                    <i class="fas fa-exclamation-triangle text-red-600 text-xl"></i>
+                </div>
+                <h3 class="text-lg leading-6 font-medium text-gray-900 mt-4">Delete Monitor</h3>
+                <div class="mt-2 px-7 py-3">
+                    <p id="delete-confirm-message" class="text-sm text-gray-500"></p>
+                </div>
+                <div class="mt-5 flex justify-center space-x-4">
+                    <button id="cancel-delete-button" class="w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 sm:w-auto sm:text-sm">
+                      Cancel
+                    </button>
+                    <button id="confirm-delete-button" type="button" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:w-auto sm:text-sm">
+                      Delete
+                    </button>
+                  </div>
+            </div>
+        </div>
+    </div>
 
     <footer class="bg-gray-800 text-white mt-12">
         <div class="container mx-auto px-6 py-12">
@@ -216,6 +238,7 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
+        // General Elements
         const monitorsListContainer = document.getElementById('monitors-list');
         const loadingState = document.getElementById('loading-state');
         const emptyState = document.getElementById('empty-state');
@@ -223,48 +246,28 @@
         const logoutButton = document.getElementById('logout-button');
         const addMonitorForm = document.getElementById('add-monitor-form');
         const formMessageArea = document.getElementById('form-message-area');
+        
+        // History Modal Elements
         const historyModal = document.getElementById('history-modal');
         const modalMonitorUrl = document.getElementById('modal-monitor-url');
         const closeModalButton = document.getElementById('close-modal-button');
         const chartLoading = document.getElementById('chart-loading');
 
+        // *** NEW: Delete Modal Elements ***
+        const deleteConfirmModal = document.getElementById('delete-confirm-modal');
+        const deleteConfirmMessage = document.getElementById('delete-confirm-message');
+        const cancelDeleteButton = document.getElementById('cancel-delete-button');
+        const confirmDeleteButton = document.getElementById('confirm-delete-button');
+
         let currentUser;
         let unsubscribe;
         let uptimeChart = null;
 
+        // --- EVENT LISTENERS ---
+
         logoutButton.addEventListener('click', () => {
             sessionStorage.removeItem('welcomeMessageShown'); 
             signOut(auth);
-        });
-
-        closeModalButton.addEventListener('click', () => historyModal.style.display = 'none');
-        window.addEventListener('click', (event) => {
-            if (event.target == historyModal) {
-                historyModal.style.display = 'none';
-            }
-        });
-
-        onAuthStateChanged(auth, async user => {
-            if (user) {
-                currentUser = user;
-                const userDocRef = doc(db, "users", user.uid);
-                const userDoc = await getDoc(userDocRef);
-                if (userDoc.exists()) {
-                    userWelcomeEl.textContent = `Hi, ${userDoc.data().name}!`;
-                } else {
-                    userWelcomeEl.textContent = `Hi, ${user.displayName || 'User'}!`;
-                }
-                
-                const welcomeMessageShown = sessionStorage.getItem('welcomeMessageShown');
-                if (!welcomeMessageShown) {
-                    fetchMonitors(user.uid, true); 
-                    sessionStorage.setItem('welcomeMessageShown', 'true');
-                } else {
-                    fetchMonitors(user.uid, false); 
-                }
-            } else {
-                window.location.href = '/login';
-            }
         });
 
         addMonitorForm.addEventListener('submit', async (e) => {
@@ -280,29 +283,75 @@
                     status: "PENDING",
                     createdAt: serverTimestamp(),
                     lastChecked: null,
-                    lastResponseTime: null,
-                    sslExpires: null,
-                    sslDaysRemaining: null
+                    lastResponseTime: null
                 });
                 addMonitorForm.reset();
                 formMessageArea.textContent = "";
-                showToast("Monitor added successfully!"); // *** NEW: Show toast on add
+                showToast("Monitor added successfully!");
             } catch (err) {
                 formMessageArea.textContent = `Error: ${err.message}`;
             }
         });
+
+        // Main listener for buttons on monitor cards
+        monitorsListContainer.addEventListener('click', (e) => {
+            const historyButton = e.target.closest('.view-history-button');
+            const deleteButton = e.target.closest('.delete-monitor-button');
+
+            if (historyButton) {
+                handleHistoryButtonClick(historyButton.dataset.id, historyButton.dataset.url);
+            }
+
+            if (deleteButton) {
+                handleDeleteButtonClick(deleteButton.dataset.id, deleteButton.dataset.url);
+            }
+        });
+        
+        // Listeners for Modal controls
+        closeModalButton.addEventListener('click', () => historyModal.style.display = 'none');
+        cancelDeleteButton.addEventListener('click', () => deleteConfirmModal.style.display = 'none');
+        confirmDeleteButton.addEventListener('click', handleDeleteConfirmation);
+
+        window.addEventListener('click', (event) => {
+            if (event.target == historyModal) historyModal.style.display = 'none';
+            if (event.target == deleteConfirmModal) deleteConfirmModal.style.display = 'none';
+        });
+
+        // --- AUTHENTICATION ---
+
+        onAuthStateChanged(auth, async user => {
+            if (user) {
+                currentUser = user;
+                const userDocRef = doc(db, "users", user.uid);
+                const userDoc = await getDoc(userDocRef);
+                userWelcomeEl.textContent = userDoc.exists() 
+                    ? `Hi, ${userDoc.data().name}!` 
+                    : `Hi, ${user.displayName || 'User'}!`;
+                
+                const welcomeMessageShown = sessionStorage.getItem('welcomeMessageShown');
+                fetchMonitors(user.uid, !welcomeMessageShown);
+                if (!welcomeMessageShown) {
+                    sessionStorage.setItem('welcomeMessageShown', 'true');
+                }
+            } else {
+                window.location.href = '/login';
+            }
+        });
+
+        // --- FUNCTIONS ---
 
         function showToast(message, isError = false) {
             const toast = document.getElementById('toast-notification');
             const toastMessage = document.getElementById('toast-message');
 
             toastMessage.textContent = message;
-            toast.style.backgroundColor = isError ? '#ef4444' : '#2dd4bf';
+            toast.className = `fixed top-5 right-5 text-white py-3 px-5 rounded-lg shadow-lg`; // Reset classes
+            toast.classList.add(isError ? 'bg-red-500' : 'bg-gray-800');
             toast.style.display = 'block';
 
             setTimeout(() => {
                 toast.style.display = 'none';
-            }, 5000); 
+            }, 4000); 
         }
 
         function fetchMonitors(userId, showNotification = false) {
@@ -320,9 +369,7 @@
                 let downSites = 0;
                 snapshot.docs.forEach(doc => {
                     const monitor = doc.data();
-                    if (monitor.status === 'DOWN') {
-                        downSites++;
-                    }
+                    if (monitor.status === 'DOWN') downSites++;
                     monitorsListContainer.innerHTML += createMonitorCard(doc.id, monitor);
                 });
 
@@ -333,7 +380,6 @@
                         showToast("All your monitored sites are up!");
                     }
                 }
-
             }, (error) => {
                 console.error("Error fetching monitors:", error);
                 loadingState.style.display = 'none';
@@ -341,14 +387,64 @@
             });
         }
 
+        async function handleHistoryButtonClick(monitorId, monitorUrl) {
+            modalMonitorUrl.textContent = monitorUrl;
+            chartLoading.style.display = 'flex';
+            document.getElementById('uptime-chart').style.display = 'none';
+            historyModal.style.display = 'block';
+
+            const logsQuery = query(collection(db, `monitors/${monitorId}/logs`), orderBy('timestamp', 'desc'), limit(50));
+            const logSnapshot = await getDocs(logsQuery);
+
+            chartLoading.style.display = 'none';
+            document.getElementById('uptime-chart').style.display = 'block';
+
+            if (logSnapshot.empty) {
+                chartLoading.style.display = 'flex';
+                chartLoading.innerHTML = '<p>No history records found.</p>';
+                document.getElementById('uptime-chart').style.display = 'none';
+                return;
+            }
+
+            const chartData = logSnapshot.docs.map(doc => {
+                const log = doc.data();
+                return { x: log.timestamp.toDate(), y: log.responseTime, status: log.status };
+            }).reverse();
+
+            renderUptimeChart(chartData);
+        }
+
+        function handleDeleteButtonClick(monitorId, monitorUrl) {
+            deleteConfirmMessage.innerHTML = `Are you sure you want to delete the monitor for <br/><strong>${monitorUrl}</strong>? This action cannot be undone.`;
+            confirmDeleteButton.dataset.id = monitorId;
+            deleteConfirmModal.style.display = 'block';
+        }
+
+        async function handleDeleteConfirmation() {
+            const monitorId = confirmDeleteButton.dataset.id;
+            if (monitorId) {
+                try {
+                    await deleteDoc(doc(db, "monitors", monitorId));
+                    showToast("Monitor deleted successfully.");
+                } catch (error) {
+                    console.error("Error removing monitor: ", error);
+                    showToast("Error deleting monitor.", true);
+                } finally {
+                    deleteConfirmModal.style.display = 'none';
+                    delete confirmDeleteButton.dataset.id;
+                }
+            }
+        }
+        
         function createMonitorCard(id, monitor) {
+            // ... (This function remains unchanged)
             let statusClass = 'status-pending', statusIcon = 'fa-clock', statusText = monitor.status || 'Pending';
             if (statusText === 'UP') { statusClass = 'status-up'; statusIcon = 'fa-check-circle'; }
             else if (statusText === 'DOWN') { statusClass = 'status-down'; statusIcon = 'fa-times-circle'; }
 
             const lastChecked = monitor.lastChecked?.toDate ? monitor.lastChecked.toDate().toLocaleString() : 'Never';
             const keywordText = monitor.keyword ? `<div class="mt-1"><span class="text-xs inline-block bg-gray-200 text-gray-700 px-2 py-1 rounded-full">Keyword: "${monitor.keyword}"</span></div>` : '';
-
+            
             let sslText = 'SSL: N/A';
             let sslClass = 'status-pending';
             if (typeof monitor.sslDaysRemaining === 'number') {
@@ -393,61 +489,9 @@
                 </div>
             `;
         }
-
-        monitorsListContainer.addEventListener('click', async (e) => {
-            const historyButton = e.target.closest('.view-history-button');
-            const deleteButton = e.target.closest('.delete-monitor-button');
-
-            if (historyButton) {
-                const monitorId = historyButton.dataset.id;
-                const monitorUrl = historyButton.dataset.url;
-
-                modalMonitorUrl.textContent = monitorUrl;
-                chartLoading.style.display = 'block';
-                document.getElementById('uptime-chart').style.display = 'none';
-                historyModal.style.display = 'block';
-
-                const logsQuery = query(collection(db, `monitors/${monitorId}/logs`), orderBy('timestamp', 'desc'), limit(50));
-                const logSnapshot = await getDocs(logsQuery);
-
-                chartLoading.style.display = 'none';
-                document.getElementById('uptime-chart').style.display = 'block';
-
-                if (logSnapshot.empty) {
-                    chartLoading.style.display = 'block';
-                    chartLoading.innerHTML = '<p>No history records found.</p>';
-                    document.getElementById('uptime-chart').style.display = 'none';
-                    return;
-                }
-
-                const chartData = logSnapshot.docs.map(doc => {
-                    const log = doc.data();
-                    return {
-                        x: log.timestamp.toDate(),
-                        y: log.responseTime,
-                        status: log.status
-                    };
-                }).reverse();
-
-                renderUptimeChart(chartData);
-            }
-
-            if (deleteButton) {
-                const monitorId = deleteButton.dataset.id;
-                const monitorUrl = deleteButton.dataset.url;
-                if (window.confirm(`Are you sure you want to delete the monitor for "${monitorUrl}"? This action cannot be undone.`)) {
-                    try {
-                        await deleteDoc(doc(db, "monitors", monitorId));
-                        showToast("Monitor deleted successfully."); // *** NEW: Show toast on delete
-                    } catch (error) {
-                        console.error("Error removing monitor: ", error);
-                        alert("There was an error deleting the monitor. Please try again.");
-                    }
-                }
-            }
-        });
-
+        
         function renderUptimeChart(data) {
+            // ... (This function remains unchanged)
             const ctx = document.getElementById('uptime-chart').getContext('2d');
             if (uptimeChart) {
                 uptimeChart.destroy();
