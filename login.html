@@ -119,7 +119,7 @@
         // Redirect if user is already logged in
         onAuthStateChanged(auth, user => {
             if (user) {
-                window.location.href = '/dashboard.html';
+                window.location.href = '/dashboard';
             }
         });
 
@@ -134,7 +134,7 @@
             const password = loginForm['login-password'].value;
             signInWithEmailAndPassword(auth, email, password)
                 .then(cred => {
-                    window.location.href = '/dashboard.html';
+                    window.location.href = '/dashboard';
                 })
                 .catch(err => {
                     messageArea.textContent = err.message;
@@ -148,7 +148,7 @@
             const password = registerForm['register-password'].value;
             createUserWithEmailAndPassword(auth, email, password)
                 .then(cred => {
-                    window.location.href = '/dashboard.html';
+                    window.location.href = '/dashboard';
                 })
                 .catch(err => {
                     messageArea.textContent = err.message;
