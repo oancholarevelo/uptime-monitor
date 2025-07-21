@@ -84,6 +84,41 @@
             background-color: #fef2f2;
             color: #991b1b;
         }
+        
+        /* *** NEW: Toast Animation Styles *** */
+        .toast {
+            visibility: hidden;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            visibility: visible;
+            -webkit-animation: fadein 0.5s, fadeout 0.5s 4.5s;
+            animation: fadein 0.5s, fadeout 0.5s 4.5s;
+        }
+
+        @-webkit-keyframes fadein {
+            from {right: 0; opacity: 0;}
+            to {right: 20px; opacity: 1;}
+        }
+
+        @keyframes fadein {
+            from {right: 0; opacity: 0;}
+            to {right: 20px; opacity: 1;}
+        }
+
+        @-webkit-keyframes fadeout {
+            from {right: 20px; opacity: 1;}
+            to {right: 0; opacity: 0;}
+        }
+
+        @keyframes fadeout {
+            from {right: 20px; opacity: 1;}
+            to {right: 0; opacity: 0;}
+        }
     </style>
 </head>
 
@@ -147,7 +182,7 @@
         </div>
     </main>
     
-    <div id="toast-notification" class="fixed top-5 right-5 bg-gray-800 text-white py-3 px-5 rounded-lg shadow-lg" style="display: none; z-index: 1000;">
+    <div id="toast-notification" class="toast bg-gray-800 text-white py-3 px-5 rounded-lg shadow-lg">
         <p id="toast-message"></p>
     </div>
 
@@ -238,7 +273,6 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // General Elements
         const monitorsListContainer = document.getElementById('monitors-list');
         const loadingState = document.getElementById('loading-state');
         const emptyState = document.getElementById('empty-state');
@@ -246,14 +280,10 @@
         const logoutButton = document.getElementById('logout-button');
         const addMonitorForm = document.getElementById('add-monitor-form');
         const formMessageArea = document.getElementById('form-message-area');
-        
-        // History Modal Elements
         const historyModal = document.getElementById('history-modal');
         const modalMonitorUrl = document.getElementById('modal-monitor-url');
         const closeModalButton = document.getElementById('close-modal-button');
         const chartLoading = document.getElementById('chart-loading');
-
-        // *** NEW: Delete Modal Elements ***
         const deleteConfirmModal = document.getElementById('delete-confirm-modal');
         const deleteConfirmMessage = document.getElementById('delete-confirm-message');
         const cancelDeleteButton = document.getElementById('cancel-delete-button');
@@ -262,8 +292,6 @@
         let currentUser;
         let unsubscribe;
         let uptimeChart = null;
-
-        // --- EVENT LISTENERS ---
 
         logoutButton.addEventListener('click', () => {
             sessionStorage.removeItem('welcomeMessageShown'); 
@@ -293,7 +321,6 @@
             }
         });
 
-        // Main listener for buttons on monitor cards
         monitorsListContainer.addEventListener('click', (e) => {
             const historyButton = e.target.closest('.view-history-button');
             const deleteButton = e.target.closest('.delete-monitor-button');
@@ -307,7 +334,6 @@
             }
         });
         
-        // Listeners for Modal controls
         closeModalButton.addEventListener('click', () => historyModal.style.display = 'none');
         cancelDeleteButton.addEventListener('click', () => deleteConfirmModal.style.display = 'none');
         confirmDeleteButton.addEventListener('click', handleDeleteConfirmation);
@@ -316,8 +342,6 @@
             if (event.target == historyModal) historyModal.style.display = 'none';
             if (event.target == deleteConfirmModal) deleteConfirmModal.style.display = 'none';
         });
-
-        // --- AUTHENTICATION ---
 
         onAuthStateChanged(auth, async user => {
             if (user) {
@@ -338,20 +362,19 @@
             }
         });
 
-        // --- FUNCTIONS ---
-
+        // *** UPDATED: showToast Function for Animation ***
         function showToast(message, isError = false) {
             const toast = document.getElementById('toast-notification');
             const toastMessage = document.getElementById('toast-message');
 
             toastMessage.textContent = message;
-            toast.className = `fixed top-5 right-5 text-white py-3 px-5 rounded-lg shadow-lg`; // Reset classes
-            toast.classList.add(isError ? 'bg-red-500' : 'bg-gray-800');
-            toast.style.display = 'block';
+            toast.style.backgroundColor = isError ? '#ef4444' : '#1f2937';
+            
+            toast.classList.add("show");
 
-            setTimeout(() => {
-                toast.style.display = 'none';
-            }, 4000); 
+            setTimeout(function(){ 
+                toast.classList.remove("show"); 
+            }, 5000);
         }
 
         function fetchMonitors(userId, showNotification = false) {
@@ -437,7 +460,6 @@
         }
         
         function createMonitorCard(id, monitor) {
-            // ... (This function remains unchanged)
             let statusClass = 'status-pending', statusIcon = 'fa-clock', statusText = monitor.status || 'Pending';
             if (statusText === 'UP') { statusClass = 'status-up'; statusIcon = 'fa-check-circle'; }
             else if (statusText === 'DOWN') { statusClass = 'status-down'; statusIcon = 'fa-times-circle'; }
@@ -475,15 +497,15 @@
                         ${keywordText}
                     </div>
 
-                    <div class="flex-shrink-0 flex flex-row sm:flex-col lg:flex-row items-center gap-4 w-full sm:w-auto mt-4 sm:mt-0">
-                        <div class="flex gap-2 w-full sm:w-auto sm:justify-end">
+                    <div class="flex-shrink-0 flex flex-col sm:items-end gap-3 w-full sm:w-auto mt-4 sm:mt-0">
+                        <div class="flex gap-2">
                             <span class="status-badge ${statusClass}">${statusText}</span>
                             <span class="status-badge ${sslClass}">${sslText}</span>
                         </div>
-                        <div class="flex items-center gap-2">
-                           <button data-id="${id}" data-url="${monitor.url}" class="view-history-button bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg text-sm transition">History</button>
-                           <a href="${monitor.url}" target="_blank" rel="noopener noreferrer" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg text-sm transition">Visit</a>
-                           <button data-id="${id}" data-url="${monitor.url}" class="delete-monitor-button text-gray-400 hover:text-red-600 w-9 h-9 flex items-center justify-center rounded-lg transition"><i class="fas fa-trash-alt"></i></button>
+                        <div class="flex items-center gap-2 w-full">
+                           <button data-id="${id}" data-url="${monitor.url}" class="view-history-button w-full sm:w-auto bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg text-sm transition">History</button>
+                           <a href="${monitor.url}" target="_blank" rel="noopener noreferrer" class="w-full sm:w-auto text-center bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg text-sm transition">Visit</a>
+                           <button data-id="${id}" data-url="${monitor.url}" class="delete-monitor-button text-gray-400 hover:text-red-600 w-10 h-10 flex-shrink-0 flex items-center justify-center rounded-lg transition"><i class="fas fa-trash-alt"></i></button>
                         </div>
                     </div>
                 </div>
@@ -491,7 +513,6 @@
         }
         
         function renderUptimeChart(data) {
-            // ... (This function remains unchanged)
             const ctx = document.getElementById('uptime-chart').getContext('2d');
             if (uptimeChart) {
                 uptimeChart.destroy();
