@@ -5,56 +5,65 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Your Monitoring Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@2.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f8f9fa; }
+        body { font-family: 'Inter', sans-serif; background-color: #f0f2f5; }
         .status-up { color: #16a34a; }
         .status-down { color: #dc2626; }
         .status-pending { color: #f59e0b; }
         .modal {
             display: none; position: fixed; z-index: 100; left: 0; top: 0;
             width: 100%; height: 100%;
-            overflow: auto; background-color: rgba(0,0,0,0.5);
+            overflow: auto; background-color: rgba(0,0,0,0.6);
+            backdrop-filter: blur(5px);
+            transition: opacity 0.3s ease;
         }
         .modal-content {
-            background-color: #fefefe; margin: 10% auto; padding: 24px;
-            border: 1px solid #888; width: 80%; max-width: 600px;
-            border-radius: 0.5rem;
+            background-color: #fefefe; margin: 5% auto; padding: 24px;
+            border: 1px solid #888; width: 90%; max-width: 800px;
+            border-radius: 0.75rem;
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
         }
     </style>
 </head>
 <body class="bg-gray-100">
 
-    <nav class="bg-white border-b border-gray-200">
+    <nav class="bg-white shadow-md">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
                 <div class="flex items-center">
-                    <i class="fas fa-satellite-dish text-2xl text-gray-700"></i>
-                    <span class="font-bold text-xl ml-2 text-gray-800">Uptime Monitor</span>
+                    <i class="fas fa-satellite-dish text-2xl text-gray-800"></i>
+                    <span class="font-bold text-xl ml-3 text-gray-900">Uptime Monitor</span>
                 </div>
                 <div class="flex items-center">
-                    <span id="user-email" class="text-sm text-gray-600 mr-4"></span>
-                    <button id="logout-button" class="text-sm text-gray-700 hover:text-gray-900">Logout</button>
+                    <span id="user-email" class="hidden sm:block text-sm text-gray-600 mr-4"></span>
+                    <button id="logout-button" class="text-sm text-gray-700 hover:text-gray-900 font-medium">
+                        <i class="fas fa-sign-out-alt mr-1"></i>Logout
+                    </button>
                 </div>
             </div>
         </div>
     </nav>
 
     <main class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-        <div class="bg-white p-6 rounded-lg border border-gray-200 mb-6">
+        <div class="bg-white p-6 rounded-xl shadow-md mb-8">
              <h2 class="text-xl font-semibold text-gray-800 mb-4">Add New Monitor</h2>
              <form id="add-monitor-form" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
                 <div class="md:col-span-2">
                     <label for="website-url" class="block text-sm font-medium text-gray-700">Website URL</label>
-                    <input type="url" id="website-url" placeholder="https://your-website.com" required class="mt-1 block w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-gray-500 focus:border-gray-500">
+                    <input type="url" id="website-url" placeholder="https://your-website.com" required class="mt-1 block w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent transition">
                 </div>
                 <div>
                     <label for="keyword" class="block text-sm font-medium text-gray-700">Keyword (Optional)</label>
-                    <input type="text" id="keyword" placeholder="e.g. 'Welcome'" class="mt-1 block w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-gray-500 focus:border-gray-500">
+                    <input type="text" id="keyword" placeholder="e.g. 'Welcome'" class="mt-1 block w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-transparent transition">
                 </div>
                 <div class="text-right">
-                    <button type="submit" class="bg-gray-800 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg h-10"><i class="fas fa-plus mr-2"></i>Add</button>
+                    <button type="submit" class="w-full bg-gray-800 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg h-10 transition duration-300 flex items-center justify-center">
+                        <i class="fas fa-plus mr-2"></i>Add
+                    </button>
                 </div>
              </form>
              <div id="form-message-area" class="mt-3 text-red-600"></div>
@@ -62,28 +71,35 @@
 
         <div id="monitors-container">
             <div class="flex justify-between items-center mb-4">
-                 <h1 class="text-2xl font-bold text-gray-900">Monitors</h1>
+                 <h1 class="text-2xl font-bold text-gray-900">Your Monitors</h1>
             </div>
-            <div id="loading-state" class="text-center py-8">
-                <i class="fas fa-spinner fa-spin text-3xl text-gray-400"></i>
-                <p class="mt-2 text-gray-600">Loading monitors...</p>
+            <div id="loading-state" class="text-center py-12">
+                <i class="fas fa-spinner fa-spin text-4xl text-gray-400"></i>
+                <p class="mt-3 text-gray-600">Loading your monitors...</p>
             </div>
-            <div id="empty-state" class="hidden text-center py-8 bg-white border border-gray-200 rounded-lg">
-                 <i class="fas fa-eye-slash text-4xl text-gray-400 mb-4"></i>
+            <div id="empty-state" class="hidden text-center py-12 bg-white shadow-md rounded-xl">
+                 <i class="fas fa-eye-slash text-5xl text-gray-400 mb-4"></i>
                  <h3 class="text-xl font-semibold text-gray-700">No monitors yet</h3>
-                 <p class="text-gray-500">Add your first site to begin monitoring.</p>
+                 <p class="text-gray-500 mt-1">Add your first site to begin monitoring.</p>
             </div>
             <div id="monitors-list" class="space-y-4"></div>
         </div>
     </main>
 
     <div id="history-modal" class="modal">
-        <div class="modal-content shadow-lg">
+        <div class="modal-content">
             <div class="flex justify-between items-center mb-4 pb-4 border-b">
-                <h2 class="text-xl font-bold text-gray-800">Uptime History</h2>
-                <button id="close-modal-button" class="text-2xl font-bold text-gray-600 hover:text-red-500">&times;</button>
+                <div>
+                    <h2 class="text-xl font-bold text-gray-800">Uptime History</h2>
+                    <p id="modal-monitor-url" class="text-sm text-gray-600"></p>
+                </div>
+                <button id="close-modal-button" class="text-2xl font-bold text-gray-500 hover:text-red-500 transition">&times;</button>
             </div>
-            <div id="history-content" class="max-h-96 overflow-y-auto">
+            <div id="history-content">
+                <div class="w-full h-64 flex items-center justify-center">
+                    <p id="chart-loading" class="text-center text-gray-500">Loading history data...</p>
+                    <canvas id="uptime-chart"></canvas>
+                </div>
             </div>
         </div>
     </div>
@@ -93,7 +109,6 @@
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
         import { getFirestore, collection, query, where, onSnapshot, addDoc, serverTimestamp, getDocs, orderBy, limit, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
-        // Your specific Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyD-hl1Z4xs0QBi6TRbEqCEPzymF-Hp_5VY",
             authDomain: "uptime-monitor-2025.firebaseapp.com",
@@ -116,13 +131,15 @@
         const addMonitorForm = document.getElementById('add-monitor-form');
         const formMessageArea = document.getElementById('form-message-area');
 
-        // Modal elements
         const historyModal = document.getElementById('history-modal');
+        const modalMonitorUrl = document.getElementById('modal-monitor-url');
         const historyContent = document.getElementById('history-content');
         const closeModalButton = document.getElementById('close-modal-button');
-
+        const chartLoading = document.getElementById('chart-loading');
+        
         let currentUser;
         let unsubscribe;
+        let uptimeChart = null;
 
         logoutButton.addEventListener('click', () => signOut(auth));
         closeModalButton.addEventListener('click', () => historyModal.style.display = 'none');
@@ -132,14 +149,13 @@
             }
         });
 
-
         onAuthStateChanged(auth, user => {
             if (user) {
                 currentUser = user;
                 userEmailEl.textContent = user.email;
                 fetchMonitors(user.uid);
             } else {
-                window.location.href = '/index.html';
+                window.location.href = '/login.html';
             }
         });
 
@@ -172,13 +188,13 @@
             emptyState.style.display = 'none';
             monitorsListContainer.innerHTML = '';
 
-            const q = query(collection(db, "monitors"), where("userId", "==", userId));
+            const q = query(collection(db, "monitors"), where("userId", "==", userId), orderBy("createdAt", "desc"));
             unsubscribe = onSnapshot(q, (snapshot) => {
                 loadingState.style.display = 'none';
                 monitorsListContainer.innerHTML = '';
                 emptyState.style.display = snapshot.empty ? 'block' : 'none';
                 
-                snapshot.docs.sort((a,b) => b.data().createdAt - a.data().createdAt).forEach(doc => {
+                snapshot.docs.forEach(doc => {
                     monitorsListContainer.innerHTML += createMonitorCard(doc.id, doc.data());
                 });
             }, (error) => {
@@ -195,10 +211,10 @@
 
             const lastChecked = monitor.lastChecked?.toDate ? monitor.lastChecked.toDate().toLocaleString() : 'Never';
             const responseTime = monitor.lastResponseTime ? `${monitor.lastResponseTime} ms` : 'N/A';
-            const keywordText = monitor.keyword ? `<p class="text-xs text-gray-500 italic">Keyword: "${monitor.keyword}"</p>` : '';
+            const keywordText = monitor.keyword ? `<p class="text-xs text-gray-500 italic mt-1">Keyword: "${monitor.keyword}"</p>` : '';
 
             return `
-                <div class="bg-white border border-gray-200 rounded-lg p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div class="bg-white shadow-md rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 transition hover:shadow-lg">
                     <div class="flex-grow">
                         <p class="font-semibold text-lg text-gray-800 break-all">${monitor.url}</p>
                         ${keywordText}
@@ -210,55 +226,58 @@
                             <p class="text-xs text-gray-400">Response: ${responseTime}</p>
                         </div>
                         <div class="flex items-center gap-2">
-                           <button data-id="${id}" class="view-history-button bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-3 rounded-lg text-sm">History</button>
-                           <button data-id="${id}" data-url="${monitor.url}" class="delete-monitor-button text-red-500 hover:text-red-700 font-bold py-2 px-3 rounded-lg text-sm"><i class="fas fa-trash-alt"></i></button>
+                           <button data-id="${id}" data-url="${monitor.url}" class="view-history-button bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-3 rounded-lg text-sm transition">History</button>
+                           <button data-id="${id}" data-url="${monitor.url}" class="delete-monitor-button text-red-500 hover:text-red-700 font-bold py-2 px-3 rounded-lg text-sm transition"><i class="fas fa-trash-alt"></i></button>
                         </div>
                     </div>
                 </div>
             `;
         }
         
-        // Event delegation for history and delete buttons
         monitorsListContainer.addEventListener('click', async (e) => {
             const historyButton = e.target.closest('.view-history-button');
             const deleteButton = e.target.closest('.delete-monitor-button');
 
             if (historyButton) {
                 const monitorId = historyButton.dataset.id;
-                historyContent.innerHTML = '<p class="text-center text-gray-500">Loading history...</p>';
+                const monitorUrl = historyButton.dataset.url;
+                
+                modalMonitorUrl.textContent = monitorUrl;
+                chartLoading.style.display = 'block';
+                document.getElementById('uptime-chart').style.display = 'none';
                 historyModal.style.display = 'block';
 
-                const logsQuery = query(collection(db, `monitors/${monitorId}/logs`), orderBy('timestamp', 'desc'), limit(30));
+                const logsQuery = query(collection(db, `monitors/${monitorId}/logs`), orderBy('timestamp', 'desc'), limit(50));
                 const logSnapshot = await getDocs(logsQuery);
                 
+                chartLoading.style.display = 'none';
+                document.getElementById('uptime-chart').style.display = 'block';
+
                 if (logSnapshot.empty) {
-                    historyContent.innerHTML = '<p class="text-center text-gray-500">No history records found.</p>';
+                    chartLoading.style.display = 'block';
+                    chartLoading.textContent = 'No history records found.';
+                    document.getElementById('uptime-chart').style.display = 'none';
                     return;
                 }
 
-                historyContent.innerHTML = logSnapshot.docs.map(doc => {
+                const chartData = logSnapshot.docs.map(doc => {
                     const log = doc.data();
-                    const statusClass = log.status === 'UP' ? 'text-green-600' : 'text-red-600';
-                    const timestamp = log.timestamp?.toDate().toLocaleString();
-                    return `
-                        <div class="border-b py-2 flex justify-between items-center text-sm">
-                           <div>
-                                <span class="font-bold ${statusClass}">${log.status}</span>
-                                <span class="text-gray-500 ml-2">${timestamp}</span>
-                           </div>
-                           <span class="text-gray-700">${log.responseTime} ms</span>
-                        </div>
-                    `;
-                }).join('');
+                    return {
+                        x: log.timestamp.toDate(),
+                        y: log.responseTime,
+                        status: log.status
+                    };
+                }).reverse(); // Reverse to show oldest first
+
+                renderUptimeChart(chartData);
             }
 
             if (deleteButton) {
                 const monitorId = deleteButton.dataset.id;
                 const monitorUrl = deleteButton.dataset.url;
-                if (confirm(`Are you sure you want to delete the monitor for "${monitorUrl}"? This action cannot be undone.`)) {
+                if (window.confirm(`Are you sure you want to delete the monitor for "${monitorUrl}"? This action cannot be undone.`)) {
                     try {
                         await deleteDoc(doc(db, "monitors", monitorId));
-                        // The UI will update automatically thanks to onSnapshot
                     } catch (error) {
                         console.error("Error removing monitor: ", error);
                         alert("There was an error deleting the monitor. Please try again.");
@@ -266,6 +285,71 @@
                 }
             }
         });
+
+        function renderUptimeChart(data) {
+            const ctx = document.getElementById('uptime-chart').getContext('2d');
+            if (uptimeChart) {
+                uptimeChart.destroy();
+            }
+            uptimeChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    datasets: [{
+                        label: 'Response Time (ms)',
+                        data: data,
+                        borderColor: 'rgb(59, 130, 246)',
+                        backgroundColor: 'rgba(59, 130, 246, 0.5)',
+                        tension: 0.1,
+                        pointBackgroundColor: data.map(d => d.status === 'UP' ? 'rgb(22, 163, 74)' : 'rgb(220, 38, 38)'),
+                        pointRadius: 5,
+                        pointHoverRadius: 7,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            type: 'time',
+                            time: {
+                                unit: 'hour',
+                                tooltipFormat: 'PPpp',
+                            },
+                            title: {
+                                display: true,
+                                text: 'Time'
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Response Time (ms)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.y !== null) {
+                                        label += context.parsed.y + ' ms';
+                                    }
+                                    return label;
+                                },
+                                afterLabel: function(context) {
+                                    return `Status: ${context.raw.status}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
     </script>
 </body>
 </html>
