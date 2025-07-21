@@ -233,7 +233,7 @@
         let uptimeChart = null;
 
         logoutButton.addEventListener('click', () => {
-            sessionStorage.removeItem('welcomeMessageShown'); // Clear session storage on logout
+            sessionStorage.removeItem('welcomeMessageShown'); 
             signOut(auth);
         });
 
@@ -257,10 +257,10 @@
                 
                 const welcomeMessageShown = sessionStorage.getItem('welcomeMessageShown');
                 if (!welcomeMessageShown) {
-                    fetchMonitors(user.uid, true); // Show notification on first load of session
+                    fetchMonitors(user.uid, true); 
                     sessionStorage.setItem('welcomeMessageShown', 'true');
                 } else {
-                    fetchMonitors(user.uid, false); // Don't show notification on reload
+                    fetchMonitors(user.uid, false); 
                 }
             } else {
                 window.location.href = '/login';
@@ -286,6 +286,7 @@
                 });
                 addMonitorForm.reset();
                 formMessageArea.textContent = "";
+                showToast("Monitor added successfully!"); // *** NEW: Show toast on add
             } catch (err) {
                 formMessageArea.textContent = `Error: ${err.message}`;
             }
@@ -296,12 +297,12 @@
             const toastMessage = document.getElementById('toast-message');
 
             toastMessage.textContent = message;
-            toast.style.backgroundColor = isError ? '#ef4444' : '#2dd4bf'; // Red for error, Teal for success
+            toast.style.backgroundColor = isError ? '#ef4444' : '#2dd4bf';
             toast.style.display = 'block';
 
             setTimeout(() => {
                 toast.style.display = 'none';
-            }, 5000); // Hide after 5 seconds
+            }, 5000); 
         }
 
         function fetchMonitors(userId, showNotification = false) {
@@ -437,6 +438,7 @@
                 if (window.confirm(`Are you sure you want to delete the monitor for "${monitorUrl}"? This action cannot be undone.`)) {
                     try {
                         await deleteDoc(doc(db, "monitors", monitorId));
+                        showToast("Monitor deleted successfully."); // *** NEW: Show toast on delete
                     } catch (error) {
                         console.error("Error removing monitor: ", error);
                         alert("There was an error deleting the monitor. Please try again.");
