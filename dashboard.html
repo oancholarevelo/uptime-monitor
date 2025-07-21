@@ -1,29 +1,50 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale-1.0">
     <title>Your SitePulse Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@2.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    <script
+        src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@2.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <link rel="icon" href="/public/favicon.ico" sizes="any">
+    <link rel="icon" type="image/png" sizes="32x32" href="/public/favicon-32x32.png">
+    <link rel="apple-touch-icon" href="/public/apple-touch-icon.png">
+    <link rel="manifest" href="/public/site.webmanifest">
     <style>
-        body { font-family: 'Inter', sans-serif; }
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
         .modal {
-            display: none; position: fixed; z-index: 100; left: 0; top: 0;
-            width: 100%; height: 100%;
-            overflow: auto; background-color: rgba(0,0,0,0.6);
+            display: none;
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.6);
             backdrop-filter: blur(5px);
             transition: opacity 0.3s ease;
         }
+
         .modal-content {
-            background-color: #fefefe; margin: 5% auto; padding: 24px;
-            border: 1px solid #888; width: 90%; max-width: 800px;
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 24px;
+            border: 1px solid #888;
+            width: 90%;
+            max-width: 800px;
             border-radius: 0.75rem;
-            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
         }
+
         /* Added for badge styling */
         .status-badge {
             display: inline-flex;
@@ -34,22 +55,46 @@
             font-weight: 600;
             line-height: 1.2;
         }
-        .status-up { background-color: #ecfdf5; color: #065f46; }
-        .status-down { background-color: #fef2f2; color: #991b1b; }
-        .status-pending { background-color: #fffbeb; color: #92400e; }
-        
-        .ssl-ok { background-color: #ecfdf5; color: #065f46; }
-        .ssl-warning { background-color: #fffbeb; color: #92400e; }
-        .ssl-error { background-color: #fef2f2; color: #991b1b; }
+
+        .status-up {
+            background-color: #ecfdf5;
+            color: #065f46;
+        }
+
+        .status-down {
+            background-color: #fef2f2;
+            color: #991b1b;
+        }
+
+        .status-pending {
+            background-color: #fffbeb;
+            color: #92400e;
+        }
+
+        .ssl-ok {
+            background-color: #ecfdf5;
+            color: #065f46;
+        }
+
+        .ssl-warning {
+            background-color: #fffbeb;
+            color: #92400e;
+        }
+
+        .ssl-error {
+            background-color: #fef2f2;
+            color: #991b1b;
+        }
     </style>
 </head>
+
 <body class="bg-gray-50 flex flex-col min-h-screen">
 
     <nav class="bg-white shadow-md">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
                 <div class="flex items-center">
-                    <i class="fas fa-heart-pulse text-2xl text-red-600"></i>
+                    <img src="/public/favicon-32x32.png" alt="SitePulse Logo" class="h-8 w-8">
                     <span class="font-bold text-xl ml-3 text-gray-900">SitePulse</span>
                 </div>
                 <div class="flex items-center">
@@ -64,37 +109,40 @@
 
     <main class="flex-grow max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 w-full">
         <div class="bg-white p-6 rounded-xl shadow-md mb-8">
-             <h2 class="text-xl font-semibold text-gray-800 mb-4">Add New Monitor</h2>
-             <form id="add-monitor-form" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Add New Monitor</h2>
+            <form id="add-monitor-form" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
                 <div class="md:col-span-2">
                     <label for="website-url" class="block text-sm font-medium text-gray-700">Website URL</label>
-                    <input type="url" id="website-url" placeholder="https://your-website.com" required class="mt-1 block w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition">
+                    <input type="url" id="website-url" placeholder="https://your-website.com" required
+                        class="mt-1 block w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition">
                 </div>
                 <div>
                     <label for="keyword" class="block text-sm font-medium text-gray-700">Keyword (Optional)</label>
-                    <input type="text" id="keyword" placeholder="e.g. 'Welcome'" class="mt-1 block w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition">
+                    <input type="text" id="keyword" placeholder="e.g. 'Welcome'"
+                        class="mt-1 block w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition">
                 </div>
                 <div class="text-right">
-                    <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg h-10 transition duration-300 flex items-center justify-center">
+                    <button type="submit"
+                        class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg h-10 transition duration-300 flex items-center justify-center">
                         <i class="fas fa-plus mr-2"></i>Add
                     </button>
                 </div>
-             </form>
-             <div id="form-message-area" class="mt-3 text-red-600"></div>
+            </form>
+            <div id="form-message-area" class="mt-3 text-red-600"></div>
         </div>
 
         <div id="monitors-container">
             <div class="flex justify-between items-center mb-4">
-                 <h1 class="text-2xl font-bold text-gray-900">Your Monitors</h1>
+                <h1 class="text-2xl font-bold text-gray-900">Your Monitors</h1>
             </div>
             <div id="loading-state" class="text-center py-12">
                 <i class="fas fa-spinner fa-spin text-4xl text-gray-400"></i>
                 <p class="mt-3 text-gray-600">Loading your monitors...</p>
             </div>
             <div id="empty-state" class="hidden text-center py-12 bg-white shadow-md rounded-xl">
-                 <i class="fas fa-eye-slash text-5xl text-gray-400 mb-4"></i>
-                 <h3 class="text-xl font-semibold text-gray-700">No monitors yet</h3>
-                 <p class="text-gray-500 mt-1">Add your first site to begin monitoring.</p>
+                <i class="fas fa-eye-slash text-5xl text-gray-400 mb-4"></i>
+                <h3 class="text-xl font-semibold text-gray-700">No monitors yet</h3>
+                <p class="text-gray-500 mt-1">Add your first site to begin monitoring.</p>
             </div>
             <div id="monitors-list" class="space-y-4"></div>
         </div>
@@ -103,7 +151,8 @@
     <div id="history-modal" class="modal">
         <div class="modal-content">
             <div class="flex justify-between items-center mb-4">
-                <h2 class="text-xl font-semibold text-gray-800">History for <span id="modal-monitor-url" class="font-bold"></span></h2>
+                <h2 class="text-xl font-semibold text-gray-800">History for <span id="modal-monitor-url"
+                        class="font-bold"></span></h2>
                 <button id="close-modal-button" class="text-gray-500 hover:text-gray-800 text-2xl">&times;</button>
             </div>
             <div id="history-content" class="relative" style="height: 400px;">
@@ -120,16 +169,21 @@
             <div class="text-center">
                 <h3 class="text-lg font-semibold">Support SitePulse</h3>
                 <p class="text-gray-400 mt-2 max-w-2xl mx-auto">
-                    If you find this tool useful and want to support its continued development and free availability, please consider contributing. Your support helps cover server costs and allows me to dedicate more time to new features.
+                    If you find this tool useful and want to support its continued development and free availability,
+                    please consider contributing. Your support helps cover server costs and allows me to dedicate more
+                    time to new features.
                 </p>
                 <div class="mt-4 flex justify-center space-x-6">
-                    <a href="https://github.com/oancholarevelo" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-white transition">
+                    <a href="https://github.com/oancholarevelo" target="_blank" rel="noopener noreferrer"
+                        class="text-gray-400 hover:text-white transition">
                         <i class="fab fa-github text-2xl"></i>
                     </a>
-                    <a href="https://www.linkedin.com/in/oliverrevelo/" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-white transition">
+                    <a href="https://www.linkedin.com/in/oliverrevelo/" target="_blank" rel="noopener noreferrer"
+                        class="text-gray-400 hover:text-white transition">
                         <i class="fab fa-linkedin text-2xl"></i>
                     </a>
-                    <a href="https://oliverrevelo.vercel.app/" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-white transition">
+                    <a href="https://oliverrevelo.vercel.app/" target="_blank" rel="noopener noreferrer"
+                        class="text-gray-400 hover:text-white transition">
                         <i class="fas fa-globe text-2xl"></i>
                     </a>
                 </div>
@@ -171,7 +225,7 @@
         const historyContent = document.getElementById('history-content');
         const closeModalButton = document.getElementById('close-modal-button');
         const chartLoading = document.getElementById('chart-loading');
-        
+
         let currentUser;
         let unsubscribe;
         let uptimeChart = null;
@@ -228,7 +282,7 @@
                 loadingState.style.display = 'none';
                 monitorsListContainer.innerHTML = '';
                 emptyState.style.display = snapshot.empty ? 'block' : 'none';
-                
+
                 snapshot.docs.forEach(doc => {
                     monitorsListContainer.innerHTML += createMonitorCard(doc.id, doc.data());
                 });
@@ -242,7 +296,7 @@
         // --- ENHANCED createMonitorCard FUNCTION ---
         function createMonitorCard(id, monitor) {
             let statusClass = 'status-pending', statusIcon = 'fa-clock', statusText = monitor.status || 'Pending';
-            if (statusText === 'UP') { statusClass = 'status-up'; statusIcon = 'fa-check-circle'; } 
+            if (statusText === 'UP') { statusClass = 'status-up'; statusIcon = 'fa-check-circle'; }
             else if (statusText === 'DOWN') { statusClass = 'status-down'; statusIcon = 'fa-times-circle'; }
 
             const lastChecked = monitor.lastChecked?.toDate ? monitor.lastChecked.toDate().toLocaleString() : 'Never';
@@ -292,7 +346,7 @@
                 </div>
             `;
         }
-        
+
         monitorsListContainer.addEventListener('click', async (e) => {
             const historyButton = e.target.closest('.view-history-button');
             const deleteButton = e.target.closest('.delete-monitor-button');
@@ -300,7 +354,7 @@
             if (historyButton) {
                 const monitorId = historyButton.dataset.id;
                 const monitorUrl = historyButton.dataset.url;
-                
+
                 modalMonitorUrl.textContent = monitorUrl;
                 chartLoading.style.display = 'block';
                 document.getElementById('uptime-chart').style.display = 'none';
@@ -308,7 +362,7 @@
 
                 const logsQuery = query(collection(db, `monitors/${monitorId}/logs`), orderBy('timestamp', 'desc'), limit(50));
                 const logSnapshot = await getDocs(logsQuery);
-                
+
                 chartLoading.style.display = 'none';
                 document.getElementById('uptime-chart').style.display = 'block';
 
@@ -390,7 +444,7 @@
                     plugins: {
                         tooltip: {
                             callbacks: {
-                                label: function(context) {
+                                label: function (context) {
                                     let label = context.dataset.label || '';
                                     if (label) {
                                         label += ': ';
@@ -400,7 +454,7 @@
                                     }
                                     return label;
                                 },
-                                afterLabel: function(context) {
+                                afterLabel: function (context) {
                                     return `Status: ${context.raw.status}`;
                                 }
                             }
@@ -411,4 +465,5 @@
         }
     </script>
 </body>
+
 </html>

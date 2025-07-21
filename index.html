@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,22 +8,43 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <link rel="icon" href="/public/favicon.ico" sizes="any">
+    <link rel="icon" type="image/png" sizes="32x32" href="/public/favicon-32x32.png">
+    <link rel="apple-touch-icon" href="/public/apple-touch-icon.png">
+    <link rel="manifest" href="/public/site.webmanifest">
+    <meta property="og:title" content="SitePulse - 24/7 Website Monitoring">
+    <meta property="og:description"
+        content="Get instant alerts when your website goes down and gain insights into its performance.">
+    <meta property="og:image" content="https://sitepulse.vercel.app/public/cover.webp">
+    <meta property="og:url" content="https://sitepulse.vercel.app">
+    <meta name="twitter:card" content="summary_large_image">
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        .feature-card { transition: transform 0.3s ease, box-shadow 0.3s ease; }
-        .feature-card:hover { transform: translateY(-5px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .feature-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
     </style>
 </head>
+
 <body class="bg-white text-gray-800">
 
     <header class="bg-white shadow-sm sticky top-0 z-50">
         <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
             <div class="flex items-center">
-                <i class="fas fa-heart-pulse text-2xl text-red-600"></i>
+                <img src="/public/favicon-32x32.png" alt="SitePulse Logo" class="h-8 w-8">
                 <span class="font-bold text-xl ml-2 text-gray-900">SitePulse</span>
             </div>
             <div>
-                <a href="/login.html" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-5 rounded-lg transition duration-300">
+                <a href="/login.html"
+                    class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-5 rounded-lg transition duration-300">
                     Sign In
                 </a>
             </div>
@@ -36,9 +58,11 @@
                     Reliable Website Monitoring.
                 </h1>
                 <p class="mt-4 text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
-                    Never miss a beat. Get instant alerts when your website goes down and gain insights into its performance. Simple, powerful, and free.
+                    Never miss a beat. Get instant alerts when your website goes down and gain insights into its
+                    performance. Simple, powerful, and free.
                 </p>
-                <a href="/login.html" class="mt-8 inline-block bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-8 rounded-lg text-lg transition duration-300 shadow-lg">
+                <a href="/login.html"
+                    class="mt-8 inline-block bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-8 rounded-lg text-lg transition duration-300 shadow-lg">
                     Start Monitoring for Free
                 </a>
             </div>
@@ -52,25 +76,31 @@
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
                     <div>
-                        <div class="flex items-center justify-center h-16 w-16 mx-auto rounded-full bg-red-100 text-red-600 mb-4">
+                        <div
+                            class="flex items-center justify-center h-16 w-16 mx-auto rounded-full bg-red-100 text-red-600 mb-4">
                             <i class="fas fa-plus text-2xl"></i>
                         </div>
                         <h3 class="text-xl font-bold mb-2">1. Add Your Website</h3>
-                        <p class="text-gray-600">Simply enter the URL of the website you want to monitor. No complex setup required.</p>
+                        <p class="text-gray-600">Simply enter the URL of the website you want to monitor. No complex
+                            setup required.</p>
                     </div>
                     <div>
-                        <div class="flex items-center justify-center h-16 w-16 mx-auto rounded-full bg-red-100 text-red-600 mb-4">
+                        <div
+                            class="flex items-center justify-center h-16 w-16 mx-auto rounded-full bg-red-100 text-red-600 mb-4">
                             <i class="fas fa-bell text-2xl"></i>
                         </div>
                         <h3 class="text-xl font-bold mb-2">2. We Monitor It 24/7</h3>
-                        <p class="text-gray-600">Our servers check your site every 5 minutes. If we detect an issue, we instantly verify it from another location.</p>
+                        <p class="text-gray-600">Our servers check your site every 5 minutes. If we detect an issue, we
+                            instantly verify it from another location.</p>
                     </div>
                     <div>
-                        <div class="flex items-center justify-center h-16 w-16 mx-auto rounded-full bg-red-100 text-red-600 mb-4">
+                        <div
+                            class="flex items-center justify-center h-16 w-16 mx-auto rounded-full bg-red-100 text-red-600 mb-4">
                             <i class="fas fa-envelope text-2xl"></i>
                         </div>
                         <h3 class="text-xl font-bold mb-2">3. Get Notified Instantly</h3>
-                        <p class="text-gray-600">If your site goes down, we send you an immediate email alert so you can take action right away.</p>
+                        <p class="text-gray-600">If your site goes down, we send you an immediate email alert so you can
+                            take action right away.</p>
                     </div>
                 </div>
             </div>
@@ -84,46 +114,58 @@
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     <div class="feature-card bg-gray-50 p-8 rounded-lg border border-gray-200">
-                        <div class="flex items-center justify-center h-12 w-12 rounded-full bg-red-100 text-red-600 mb-4">
+                        <div
+                            class="flex items-center justify-center h-12 w-12 rounded-full bg-red-100 text-red-600 mb-4">
                             <i class="fas fa-tachometer-alt text-2xl"></i>
                         </div>
                         <h3 class="text-xl font-bold mb-2">Constant Monitoring</h3>
-                        <p class="text-gray-600">We check your website every 5 minutes from multiple locations to ensure it's always online and accessible to your users.</p>
+                        <p class="text-gray-600">We check your website every 5 minutes from multiple locations to ensure
+                            it's always online and accessible to your users.</p>
                     </div>
                     <div class="feature-card bg-gray-50 p-8 rounded-lg border border-gray-200">
-                        <div class="flex items-center justify-center h-12 w-12 rounded-full bg-red-100 text-red-600 mb-4">
+                        <div
+                            class="flex items-center justify-center h-12 w-12 rounded-full bg-red-100 text-red-600 mb-4">
                             <i class="fas fa-bell text-2xl"></i>
                         </div>
                         <h3 class="text-xl font-bold mb-2">Instant Alerts</h3>
-                        <p class="text-gray-600">Receive immediate email notifications the moment your site goes down, so you can take action before it affects your business.</p>
+                        <p class="text-gray-600">Receive immediate email notifications the moment your site goes down,
+                            so you can take action before it affects your business.</p>
                     </div>
                     <div class="feature-card bg-gray-50 p-8 rounded-lg border border-gray-200">
-                        <div class="flex items-center justify-center h-12 w-12 rounded-full bg-red-100 text-red-600 mb-4">
+                        <div
+                            class="flex items-center justify-center h-12 w-12 rounded-full bg-red-100 text-red-600 mb-4">
                             <i class="fas fa-search-plus text-2xl"></i>
                         </div>
                         <h3 class="text-xl font-bold mb-2">Keyword Verification</h3>
-                        <p class="text-gray-600">Go beyond simple pings. We can check for a specific keyword on your page to ensure your content is loading correctly.</p>
+                        <p class="text-gray-600">Go beyond simple pings. We can check for a specific keyword on your
+                            page to ensure your content is loading correctly.</p>
                     </div>
-                     <div class="feature-card bg-gray-50 p-8 rounded-lg border border-gray-200">
-                        <div class="flex items-center justify-center h-12 w-12 rounded-full bg-red-100 text-red-600 mb-4">
+                    <div class="feature-card bg-gray-50 p-8 rounded-lg border border-gray-200">
+                        <div
+                            class="flex items-center justify-center h-12 w-12 rounded-full bg-red-100 text-red-600 mb-4">
                             <i class="fas fa-chart-line text-2xl"></i>
                         </div>
                         <h3 class="text-xl font-bold mb-2">Performance Insights</h3>
-                        <p class="text-gray-600">Track your site's response time and review historical uptime data with beautiful charts to understand its performance over time.</p>
+                        <p class="text-gray-600">Track your site's response time and review historical uptime data with
+                            beautiful charts to understand its performance over time.</p>
                     </div>
-                     <div class="feature-card bg-gray-50 p-8 rounded-lg border border-gray-200">
-                        <div class="flex items-center justify-center h-12 w-12 rounded-full bg-red-100 text-red-600 mb-4">
+                    <div class="feature-card bg-gray-50 p-8 rounded-lg border border-gray-200">
+                        <div
+                            class="flex items-center justify-center h-12 w-12 rounded-full bg-red-100 text-red-600 mb-4">
                             <i class="fas fa-mobile-alt text-2xl"></i>
                         </div>
                         <h3 class="text-xl font-bold mb-2">Mobile-First Design</h3>
-                        <p class="text-gray-600">Access your dashboard and manage your monitors from any device, anywhere, with our fully responsive interface.</p>
+                        <p class="text-gray-600">Access your dashboard and manage your monitors from any device,
+                            anywhere, with our fully responsive interface.</p>
                     </div>
-                     <div class="feature-card bg-gray-50 p-8 rounded-lg border border-gray-200">
-                        <div class="flex items-center justify-center h-12 w-12 rounded-full bg-red-100 text-red-600 mb-4">
+                    <div class="feature-card bg-gray-50 p-8 rounded-lg border border-gray-200">
+                        <div
+                            class="flex items-center justify-center h-12 w-12 rounded-full bg-red-100 text-red-600 mb-4">
                             <i class="fas fa-lock text-2xl"></i>
                         </div>
                         <h3 class="text-xl font-bold mb-2">Secure & Private</h3>
-                        <p class="text-gray-600">Your data is yours. We use secure authentication and respect your privacy. We only monitor what you tell us to.</p>
+                        <p class="text-gray-600">Your data is yours. We use secure authentication and respect your
+                            privacy. We only monitor what you tell us to.</p>
                     </div>
                 </div>
             </div>
@@ -135,16 +177,21 @@
             <div class="text-center">
                 <h3 class="text-lg font-semibold">Support SitePulse</h3>
                 <p class="text-gray-400 mt-2 max-w-2xl mx-auto">
-                    If you find this tool useful and want to support its continued development and free availability, please consider contributing. Your support helps cover server costs and allows me to dedicate more time to new features.
+                    If you find this tool useful and want to support its continued development and free availability,
+                    please consider contributing. Your support helps cover server costs and allows me to dedicate more
+                    time to new features.
                 </p>
                 <div class="mt-4 flex justify-center space-x-6">
-                    <a href="https://github.com/oancholarevelo" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-white transition">
+                    <a href="https://github.com/oancholarevelo" target="_blank" rel="noopener noreferrer"
+                        class="text-gray-400 hover:text-white transition">
                         <i class="fab fa-github text-2xl"></i>
                     </a>
-                    <a href="https://www.linkedin.com/in/oliverrevelo/" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-white transition">
+                    <a href="https://www.linkedin.com/in/oliverrevelo/" target="_blank" rel="noopener noreferrer"
+                        class="text-gray-400 hover:text-white transition">
                         <i class="fab fa-linkedin text-2xl"></i>
                     </a>
-                    <a href="https://oliverrevelo.vercel.app/" target="_blank" rel="noopener noreferrer" class="text-gray-400 hover:text-white transition">
+                    <a href="https://oliverrevelo.vercel.app/" target="_blank" rel="noopener noreferrer"
+                        class="text-gray-400 hover:text-white transition">
                         <i class="fas fa-globe text-2xl"></i>
                     </a>
                 </div>
@@ -156,4 +203,5 @@
     </footer>
 
 </body>
+
 </html>
