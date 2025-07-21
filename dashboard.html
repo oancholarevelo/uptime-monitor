@@ -90,7 +90,19 @@
     </main>
 
     <div id="history-modal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-semibold text-gray-800">History for <span id="modal-monitor-url" class="font-bold"></span></h2>
+                <button id="close-modal-button" class="text-gray-500 hover:text-gray-800 text-2xl">&times;</button>
+            </div>
+            <div id="history-content" class="relative" style="height: 400px;">
+                <div id="chart-loading" class="absolute inset-0 flex items-center justify-center bg-white">
+                    <i class="fas fa-spinner fa-spin text-3xl text-gray-400"></i>
+                </div>
+                <canvas id="uptime-chart"></canvas>
+            </div>
         </div>
+    </div>
 
     <footer class="bg-gray-800 text-white mt-12">
         <div class="container mx-auto px-6 py-12">
