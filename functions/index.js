@@ -1,9 +1,22 @@
 const functions = require("firebase-functions/v1");
 const admin = require("firebase-admin");
 const axios = require("axios");
+const tls = require('tls');
 
 admin.initializeApp();
 const db = admin.firestore();
+
+/**
+ * NEW: Triggered function that performs an initial check when a new monitor is created.
+ */
+exports.onMonitorCreated = functions.firestore
+    .document("monitors/{monitorId}")
+    .onCreate(async (snap, context) => {
+        const monitorId = context.params.monitorId;
+        const monitorData = snap.data();
+        console.log(`New monitor created: ${monitorId}. Performing initial check for ${monitorData.url}.`);
+        return checkAndUpdateStatus(monitorId, monitorData);
+    });
 
 /**
  * Scheduled function that runs every 5 minutes to check all websites.
@@ -12,7 +25,7 @@ exports.checkWebsites = functions
     .runWith({timeoutSeconds: 300})
     .pubsub.schedule("every 5 minutes")
     .onRun(async (context) => {
-        console.log("Starting website status check for all monitors.");
+        console.log("Starting scheduled website status check for all monitors.");
         const monitorsSnapshot = await db.collection("monitors").get();
 
         if (monitorsSnapshot.empty) {
@@ -25,9 +38,58 @@ exports.checkWebsites = functions
         });
 
         await Promise.all(promises);
-        console.log("Finished website status check for all monitors.");
+        console.log("Finished scheduled website status check.");
         return null;
     });
+
+/**
+ * Helper function to get SSL certificate expiry date.
+ * @param {string} hostname The hostname to check.
+ * @return {Promise<object|null>} A promise that resolves with SSL info or null.
+ */
+const getSslExpiry = (hostname) => {
+    return new Promise((resolve) => {
+        try {
+            const options = {
+                host: hostname,
+                port: 443,
+                rejectUnauthorized: false // Important to get cert even if self-signed
+            };
+
+            const socket = tls.connect(options, () => {
+                const cert = socket.getPeerCertificate();
+                socket.end();
+
+                if (cert && cert.valid_to) {
+                    const expiryDate = new Date(cert.valid_to);
+                    const daysRemaining = Math.floor((expiryDate - new Date()) / (1000 * 60 * 60 * 24));
+                    resolve({
+                        expires: expiryDate.toISOString(),
+                        daysRemaining: daysRemaining
+                    });
+                } else {
+                    resolve(null);
+                }
+            });
+
+            socket.on('error', (err) => {
+                console.error(`SSL check error for ${hostname}:`, err.message);
+                resolve(null);
+            });
+            
+            socket.setTimeout(5000, () => {
+                socket.destroy();
+                console.error(`SSL check timed out for ${hostname}`);
+                resolve(null);
+            });
+
+        } catch (error) {
+            console.error(`Exception during SSL check for ${hostname}:`, error.message);
+            resolve(null);
+        }
+    });
+};
+
 
 /**
  * Helper function to check a single URL, log history, and update its status.
@@ -42,26 +104,28 @@ const checkAndUpdateStatus = async (docId, monitor) => {
     let status = "DOWN";
     let responseTime = -1;
     const startTime = Date.now();
+    let sslInfo = null;
 
     try {
+        const parsedUrl = new URL(url);
+        if (parsedUrl.protocol === 'https:') {
+            sslInfo = await getSslExpiry(parsedUrl.hostname);
+        }
+
         const response = await axios.get(url, {timeout: 10000});
         responseTime = Date.now() - startTime;
 
         if (response.status >= 200 && response.status < 300) {
-            status = "UP"; // Assume UP if status code is 2xx
+            status = "UP";
 
-            // If a keyword is specified, perform an additional check
             if (keyword) {
                 const pageContent = response.data.toString().toLowerCase();
                 if (!pageContent.includes(keyword.toLowerCase())) {
-                    status = "DOWN"; // Mark as DOWN if keyword is missing
-                    console.log(
-                        `Site ${url} is UP (2xx) but keyword "${keyword}" was NOT found.`,
-                    );
+                    status = "DOWN";
+                    console.log(`Site ${url} is UP (2xx) but keyword "${keyword}" was NOT found.`);
                 }
             }
         } else {
-            // Status code was not 2xx
             status = "DOWN";
         }
     } catch (error) {
@@ -70,14 +134,16 @@ const checkAndUpdateStatus = async (docId, monitor) => {
         status = "DOWN";
     }
 
-    // 1. Update the main monitor document in Firestore
-    await monitorRef.update({
+    const updateData = {
         status: status,
         lastChecked: admin.firestore.FieldValue.serverTimestamp(),
         lastResponseTime: responseTime,
-    });
+        sslExpires: sslInfo ? sslInfo.expires : null,
+        sslDaysRemaining: sslInfo ? sslInfo.daysRemaining : null,
+    };
 
-    // 2. Create a new log entry in the 'logs' subcollection
+    await monitorRef.update(updateData);
+
     return logRef.add({
         status: status,
         responseTime: responseTime,
@@ -85,9 +151,9 @@ const checkAndUpdateStatus = async (docId, monitor) => {
     });
 };
 
+
 /**
  * Triggered function that sends an email alert when a site goes from UP to DOWN.
- * Requires the "Trigger Email" Firebase Extension to be installed.
  */
 exports.sendAlertOnStatusChange = functions.firestore
     .document("monitors/{monitorId}")
@@ -95,11 +161,8 @@ exports.sendAlertOnStatusChange = functions.firestore
         const before = change.before.data();
         const after = change.after.data();
 
-        // Check if the status has changed from UP to DOWN
         if (before.status === "UP" && after.status === "DOWN") {
             const {url, userId} = after;
-
-            // Get the user's details from Firebase Auth
             const user = await admin.auth().getUser(userId);
             const userEmail = user.email;
 
@@ -110,20 +173,11 @@ exports.sendAlertOnStatusChange = functions.firestore
 
             console.log(`Site ${url} went down. Triggering alert to ${userEmail}.`);
 
-            // Create a document in the 'mail' collection to trigger the email ext
             await db.collection("mail").add({
                 to: [userEmail],
                 message: {
                     subject: `❗ Uptime Alert: ${url} is DOWN!`,
-                    html: `
-                        <p>Hello,</p>
-                        <p>Alert: <strong>${url}</strong> is down.</p>
-                        <p>Detected at ${new Date().toUTCString()}.</p>
-                        <p>Please check your website.</p>
-                        <br/>
-                        <p>Thank you,</p>
-                        <p><strong>Your Uptime Monitor</strong></p>
-                    `,
+                    html: `<p>Hello,</p><p>Alert: <strong>${url}</strong> is down.</p><p>Detected at ${new Date().toUTCString()}.</p><p>Please check your website.</p><br/><p>Thank you,</p><p><strong>Your Uptime Monitor</strong></p>`,
                 },
             });
         }
@@ -131,8 +185,6 @@ exports.sendAlertOnStatusChange = functions.firestore
 
 /**
  * Recursively delete a collection and its subcollections.
- * @param {string} collectionPath The path to the collection to delete.
- * @param {number} batchSize The number of documents to delete in each batch.
  */
 async function deleteCollection(collectionPath, batchSize) {
     const collectionRef = db.collection(collectionPath);
@@ -145,28 +197,22 @@ async function deleteCollection(collectionPath, batchSize) {
 
 async function deleteQueryBatch(query, resolve) {
     const snapshot = await query.get();
-
     const batchSize = snapshot.size;
     if (batchSize === 0) {
-        // When there are no documents left, we are done
         resolve();
         return;
     }
 
-    // Delete documents in a batch
     const batch = db.batch();
     snapshot.docs.forEach((doc) => {
         batch.delete(doc.ref);
     });
     await batch.commit();
 
-    // Recurse on the next process tick, to avoid
-    // exploding the stack.
     process.nextTick(() => {
         deleteQueryBatch(query, resolve);
     });
 }
-
 
 /**
  * Triggered function that deletes all logs in a monitor's subcollection
@@ -177,10 +223,7 @@ exports.deleteMonitorSubcollections = functions.firestore
     .onDelete(async (snap, context) => {
         const monitorId = context.params.monitorId;
         console.log(`Deleting subcollections for monitor ${monitorId}`);
-
         const logsPath = `monitors/${monitorId}/logs`;
-        await deleteCollection(logsPath, 50); // Adjust batch size as needed
-
+        await deleteCollection(logsPath, 50);
         console.log(`Successfully deleted subcollections for monitor ${monitorId}`);
     });
-    

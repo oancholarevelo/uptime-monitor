@@ -14,6 +14,9 @@
         .status-up { color: #16a34a; }
         .status-down { color: #dc2626; }
         .status-pending { color: #f59e0b; }
+        .ssl-ok { color: #16a34a; }
+        .ssl-warning { color: #f59e0b; }
+        .ssl-error { color: #dc2626; }
         .modal {
             display: none; position: fixed; z-index: 100; left: 0; top: 0;
             width: 100%; height: 100%;
@@ -173,7 +176,9 @@
                     status: "PENDING",
                     createdAt: serverTimestamp(),
                     lastChecked: null,
-                    lastResponseTime: null
+                    lastResponseTime: null,
+                    sslExpires: null,
+                    sslDaysRemaining: null
                 });
                 addMonitorForm.reset();
                 formMessageArea.textContent = "";
@@ -213,6 +218,21 @@
             const responseTime = monitor.lastResponseTime ? `${monitor.lastResponseTime} ms` : 'N/A';
             const keywordText = monitor.keyword ? `<p class="text-xs text-gray-500 italic mt-1">Keyword: "${monitor.keyword}"</p>` : '';
 
+            let sslText = 'N/A';
+            let sslClass = 'text-gray-400';
+            if (monitor.sslDaysRemaining !== null) {
+                if (monitor.sslDaysRemaining < 0) {
+                    sslText = 'Expired';
+                    sslClass = 'ssl-error';
+                } else if (monitor.sslDaysRemaining < 30) {
+                    sslText = `Expires in ${monitor.sslDaysRemaining} days`;
+                    sslClass = 'ssl-warning';
+                } else {
+                    sslText = `Expires in ${monitor.sslDaysRemaining} days`;
+                    sslClass = 'ssl-ok';
+                }
+            }
+
             return `
                 <div class="bg-white shadow-md rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 transition hover:shadow-lg">
                     <div class="flex-grow">
@@ -221,9 +241,9 @@
                         <p class="text-sm text-gray-500 mt-1">Last check: ${lastChecked}</p>
                     </div>
                     <div class="flex items-center gap-4 w-full sm:w-auto">
-                         <div class="text-left sm:text-right">
+                         <div class="text-left sm:text-right space-y-1">
                             <p class="font-medium text-md ${statusClass}"><i class="fas ${statusIcon} mr-2"></i>${statusText}</p>
-                            <p class="text-xs text-gray-400">Response: ${responseTime}</p>
+                            <p class="text-xs ${sslClass}"><i class="fas fa-shield-alt mr-2"></i>SSL: ${sslText}</p>
                         </div>
                         <div class="flex items-center gap-2">
                            <button data-id="${id}" data-url="${monitor.url}" class="view-history-button bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-3 rounded-lg text-sm transition">History</button>
@@ -267,7 +287,7 @@
                         y: log.responseTime,
                         status: log.status
                     };
-                }).reverse(); // Reverse to show oldest first
+                }).reverse();
 
                 renderUptimeChart(chartData);
             }
