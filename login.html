@@ -27,9 +27,9 @@
     </style>
 </head>
 
-<body class="bg-white min-h-screen flex flex-col items-center justify-center">
+<body class="bg-white min-h-screen flex flex-col items-center justify-center p-4">
 
-    <div class="w-full max-w-sm mx-auto p-4">
+    <div class="w-full max-w-sm mx-auto">
         <header class="text-center mb-8">
             <a href="/" class="inline-block mb-4">
                 <img src="/images/android-chrome-192x192.png" alt="SitePulse Logo" class="h-16 w-16 mx-auto">
@@ -108,6 +108,7 @@
     </div>
 
     <script type="module">
+        // Firebase and form logic...
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
         import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
@@ -211,6 +212,15 @@
             registerContainer.style.display = 'none';
             loginContainer.style.display = 'block';
         });
+    </script>
+    
+    <script>
+        // This script fixes the 100vh issue on mobile browsers
+        function setBodyHeight() {
+            document.body.style.height = window.innerHeight + 'px';
+        }
+        window.addEventListener('resize', setBodyHeight);
+        setBodyHeight();
     </script>
 </body>
 
