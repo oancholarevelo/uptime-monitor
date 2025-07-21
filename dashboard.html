@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale-1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Your SitePulse Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
@@ -45,7 +45,6 @@
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
         }
 
-        /* Added for badge styling */
         .status-badge {
             display: inline-flex;
             align-items: center;
@@ -98,7 +97,7 @@
                     <span class="font-bold text-xl ml-3 text-gray-900">SitePulse</span>
                 </div>
                 <div class="flex items-center">
-                    <span id="user-email" class="hidden sm:block text-sm text-gray-600 mr-4"></span>
+                    <span id="user-welcome" class="hidden sm:block text-sm text-gray-600 mr-4"></span>
                     <button id="logout-button" class="text-sm text-gray-700 hover:text-red-600 font-medium">
                         <i class="fas fa-sign-out-alt mr-1"></i>Logout
                     </button>
@@ -147,6 +146,17 @@
             <div id="monitors-list" class="space-y-4"></div>
         </div>
     </main>
+    
+    <div id="welcome-modal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-semibold text-gray-800">Welcome, <span id="modal-user-name" class="font-bold"></span>!</h2>
+                <button id="close-welcome-modal-button" class="text-gray-500 hover:text-gray-800 text-2xl">&times;</button>
+            </div>
+            <div id="modal-status-update"></div>
+        </div>
+    </div>
+
 
     <div id="history-modal" class="modal">
         <div class="modal-content">
@@ -197,7 +207,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
-        import { getFirestore, collection, query, where, onSnapshot, addDoc, serverTimestamp, getDocs, orderBy, limit, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+        import { getFirestore, collection, query, where, onSnapshot, addDoc, serverTimestamp, getDocs, orderBy, limit, doc, deleteDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyD-hl1Z4xs0QBi6TRbEqCEPzymF-Hp_5VY",
@@ -216,15 +226,19 @@
         const monitorsListContainer = document.getElementById('monitors-list');
         const loadingState = document.getElementById('loading-state');
         const emptyState = document.getElementById('empty-state');
-        const userEmailEl = document.getElementById('user-email');
+        const userWelcomeEl = document.getElementById('user-welcome');
         const logoutButton = document.getElementById('logout-button');
         const addMonitorForm = document.getElementById('add-monitor-form');
         const formMessageArea = document.getElementById('form-message-area');
         const historyModal = document.getElementById('history-modal');
         const modalMonitorUrl = document.getElementById('modal-monitor-url');
-        const historyContent = document.getElementById('history-content');
         const closeModalButton = document.getElementById('close-modal-button');
         const chartLoading = document.getElementById('chart-loading');
+        
+        const welcomeModal = document.getElementById('welcome-modal');
+        const modalUserName = document.getElementById('modal-user-name');
+        const modalStatusUpdate = document.getElementById('modal-status-update');
+        const closeWelcomeModalButton = document.getElementById('close-welcome-modal-button');
 
         let currentUser;
         let unsubscribe;
@@ -232,16 +246,27 @@
 
         logoutButton.addEventListener('click', () => signOut(auth));
         closeModalButton.addEventListener('click', () => historyModal.style.display = 'none');
+        closeWelcomeModalButton.addEventListener('click', () => welcomeModal.style.display = 'none');
         window.addEventListener('click', (event) => {
-            if (event.target == historyModal) {
+            if (event.target == historyModal || event.target == welcomeModal) {
                 historyModal.style.display = 'none';
+                welcomeModal.style.display = 'none';
             }
         });
 
-        onAuthStateChanged(auth, user => {
+        onAuthStateChanged(auth, async user => {
             if (user) {
                 currentUser = user;
-                userEmailEl.textContent = user.email;
+                const userDocRef = doc(db, "users", user.uid);
+                const userDoc = await getDoc(userDocRef);
+                if (userDoc.exists()) {
+                    const userData = userDoc.data();
+                    userWelcomeEl.textContent = `Hi, ${userData.name}!`;
+                    modalUserName.textContent = userData.name;
+                } else {
+                    userWelcomeEl.textContent = `Hi, ${user.displayName}!`;
+                    modalUserName.textContent = user.displayName;
+                }
                 fetchMonitors(user.uid);
             } else {
                 window.location.href = '/login';
@@ -283,9 +308,24 @@
                 monitorsListContainer.innerHTML = '';
                 emptyState.style.display = snapshot.empty ? 'block' : 'none';
 
+                let downSites = [];
                 snapshot.docs.forEach(doc => {
-                    monitorsListContainer.innerHTML += createMonitorCard(doc.id, doc.data());
+                    const monitor = doc.data();
+                    if (monitor.status === 'DOWN') {
+                        downSites.push(monitor.url);
+                    }
+                    monitorsListContainer.innerHTML += createMonitorCard(doc.id, monitor);
                 });
+
+                if (downSites.length > 0) {
+                    modalStatusUpdate.innerHTML = `<p class="text-red-600">You have ${downSites.length} site(s) currently down:</p>
+                                                   <ul class="list-disc list-inside mt-2">${downSites.map(url => `<li>${url}</li>`).join('')}</ul>`;
+                } else {
+                    modalStatusUpdate.innerHTML = `<p class="text-green-600">All your sites are up!</p>`;
+                }
+                
+                welcomeModal.style.display = 'block';
+
             }, (error) => {
                 console.error("Error fetching monitors:", error);
                 loadingState.style.display = 'none';
@@ -293,7 +333,6 @@
             });
         }
 
-        // --- ENHANCED createMonitorCard FUNCTION ---
         function createMonitorCard(id, monitor) {
             let statusClass = 'status-pending', statusIcon = 'fa-clock', statusText = monitor.status || 'Pending';
             if (statusText === 'UP') { statusClass = 'status-up'; statusIcon = 'fa-check-circle'; }
@@ -303,7 +342,7 @@
             const keywordText = monitor.keyword ? `<div class="mt-1"><span class="text-xs inline-block bg-gray-200 text-gray-700 px-2 py-1 rounded-full">Keyword: "${monitor.keyword}"</span></div>` : '';
 
             let sslText = 'SSL: N/A';
-            let sslClass = 'status-pending'; // Default greyish badge
+            let sslClass = 'status-pending';
             if (typeof monitor.sslDaysRemaining === 'number') {
                 if (monitor.sslDaysRemaining < 0) {
                     sslText = 'SSL: Expired';
