@@ -1,5 +1,4 @@
 const functions = require("firebase-functions/v1");
-console.log("firebase-functions pubsub:", functions.pubsub);
 const admin = require("firebase-admin");
 const axios = require("axios");
 
@@ -129,3 +128,59 @@ exports.sendAlertOnStatusChange = functions.firestore
             });
         }
     });
+
+/**
+ * Recursively delete a collection and its subcollections.
+ * @param {string} collectionPath The path to the collection to delete.
+ * @param {number} batchSize The number of documents to delete in each batch.
+ */
+async function deleteCollection(collectionPath, batchSize) {
+    const collectionRef = db.collection(collectionPath);
+    const query = collectionRef.orderBy('__name__').limit(batchSize);
+
+    return new Promise((resolve, reject) => {
+        deleteQueryBatch(query, resolve).catch(reject);
+    });
+}
+
+async function deleteQueryBatch(query, resolve) {
+    const snapshot = await query.get();
+
+    const batchSize = snapshot.size;
+    if (batchSize === 0) {
+        // When there are no documents left, we are done
+        resolve();
+        return;
+    }
+
+    // Delete documents in a batch
+    const batch = db.batch();
+    snapshot.docs.forEach((doc) => {
+        batch.delete(doc.ref);
+    });
+    await batch.commit();
+
+    // Recurse on the next process tick, to avoid
+    // exploding the stack.
+    process.nextTick(() => {
+        deleteQueryBatch(query, resolve);
+    });
+}
+
+
+/**
+ * Triggered function that deletes all logs in a monitor's subcollection
+ * when the monitor document is deleted.
+ */
+exports.deleteMonitorSubcollections = functions.firestore
+    .document("monitors/{monitorId}")
+    .onDelete(async (snap, context) => {
+        const monitorId = context.params.monitorId;
+        console.log(`Deleting subcollections for monitor ${monitorId}`);
+
+        const logsPath = `monitors/${monitorId}/logs`;
+        await deleteCollection(logsPath, 50); // Adjust batch size as needed
+
+        console.log(`Successfully deleted subcollections for monitor ${monitorId}`);
+    });
+    
