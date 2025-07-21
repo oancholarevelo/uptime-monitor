@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Uptime Monitor - Sign In</title>
+    <title>SitePulse - Sign In</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
@@ -21,9 +21,9 @@
     <div class="w-full max-w-sm mx-auto">
         <header class="text-center mb-8">
             <a href="/" class="inline-block mb-4">
-                <i class="fas fa-satellite-dish text-5xl text-gray-700"></i>
+                <i class="fas fa-heart-pulse text-5xl text-red-600"></i>
             </a>
-            <h1 class="text-3xl font-bold text-gray-800">Uptime Monitor</h1>
+            <h1 class="text-3xl font-bold text-gray-800">SitePulse</h1>
             <p class="text-gray-600 mt-2">Welcome back. Please sign in to continue.</p>
         </header>
 
@@ -34,19 +34,19 @@
                     <div class="space-y-4">
                         <div>
                             <label for="login-email" class="block text-sm font-medium text-gray-600">Email</label>
-                            <input type="email" id="login-email" required class="mt-1 block w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-gray-500 focus:border-gray-500 transition">
+                            <input type="email" id="login-email" required class="mt-1 block w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500 transition">
                         </div>
                         <div>
                             <label for="login-password" class="block text-sm font-medium text-gray-600">Password</label>
-                            <input type="password" id="login-password" required class="mt-1 block w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-gray-500 focus:border-gray-500 transition">
+                            <input type="password" id="login-password" required class="mt-1 block w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500 transition">
                         </div>
                     </div>
                     <div class="mt-6">
-                        <button type="submit" class="w-full bg-gray-800 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300">Sign In</button>
+                        <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300">Sign In</button>
                     </div>
                 </form>
                 <p class="text-center text-sm text-gray-600 mt-4">
-                    No account? <a href="#" id="show-register" class="font-medium text-gray-700 hover:text-gray-500">Register</a>
+                    No account? <a href="#" id="show-register" class="font-medium text-red-600 hover:text-red-500">Register</a>
                 </p>
             </div>
 
@@ -56,19 +56,19 @@
                     <div class="space-y-4">
                         <div>
                             <label for="register-email" class="block text-sm font-medium text-gray-600">Email</label>
-                            <input type="email" id="register-email" required class="mt-1 block w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-gray-500 focus:border-gray-500 transition">
+                            <input type="email" id="register-email" required class="mt-1 block w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500 transition">
                         </div>
                         <div>
                             <label for="register-password" class="block text-sm font-medium text-gray-600">Password</label>
-                            <input type="password" id="register-password" required class="mt-1 block w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-gray-500 focus:border-gray-500 transition">
+                            <input type="password" id="register-password" required class="mt-1 block w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500 transition">
                         </div>
                     </div>
                     <div class="mt-6">
-                        <button type="submit" class="w-full bg-gray-800 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300">Register</button>
+                        <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300">Register</button>
                     </div>
                 </form>
                 <p class="text-center text-sm text-gray-600 mt-4">
-                    Already have an account? <a href="#" id="show-login" class="font-medium text-gray-700 hover:text-gray-500">Sign in</a>
+                    Already have an account? <a href="#" id="show-login" class="font-medium text-red-600 hover:text-red-500">Sign in</a>
                 </p>
             </div>
              <div id="message-area" class="text-center mt-4 text-red-600 font-medium"></div>

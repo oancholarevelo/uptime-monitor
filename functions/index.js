@@ -176,8 +176,8 @@ exports.sendAlertOnStatusChange = functions.firestore
             await db.collection("mail").add({
                 to: [userEmail],
                 message: {
-                    subject: `❗ Uptime Alert: ${url} is DOWN!`,
-                    html: `<p>Hello,</p><p>Alert: <strong>${url}</strong> is down.</p><p>Detected at ${new Date().toUTCString()}.</p><p>Please check your website.</p><br/><p>Thank you,</p><p><strong>Your Uptime Monitor</strong></p>`,
+                    subject: `❗ SitePulse Alert: ${url} is DOWN!`,
+                    html: `<p>Hello,</p><p>Alert: <strong>${url}</strong> is down.</p><p>Detected at ${new Date().toUTCString()}.</p><p>Please check your website.</p><br/><p>Thank you,</p><p><strong>SitePulse</strong></p>`,
                 },
             });
         }
@@ -227,3 +227,4 @@ exports.deleteMonitorSubcollections = functions.firestore
         await deleteCollection(logsPath, 50);
         console.log(`Successfully deleted subcollections for monitor ${monitorId}`);
     });
+    
