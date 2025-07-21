@@ -1,15 +1,10 @@
 <!DOCTYPE html>
-<html lang="en" class="">
+<html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Your SitePulse Dashboard</title>
-    
-    <script>
-        tailwind.config = {
-          darkMode: 'class',
-        }
-    </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
     <script
@@ -21,10 +16,6 @@
     <link rel="apple-touch-icon" href="/images/apple-touch-icon.png">
     <link rel="manifest" href="/images/site.webmanifest">
     <style>
-        html.dark {
-            color-scheme: dark;
-        }
-
         body {
             font-family: 'Inter', sans-serif;
         }
@@ -54,11 +45,6 @@
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
         }
 
-        html.dark .modal-content {
-            background-color: #1f2937;
-            border-color: #4b5563;
-        }
-        
         .status-badge {
             display: inline-flex;
             align-items: center;
@@ -73,20 +59,10 @@
             background-color: #ecfdf5;
             color: #065f46;
         }
-        
-        html.dark .status-up {
-            background-color: #065f46;
-            color: #d1fae5;
-        }
 
         .status-down {
             background-color: #fef2f2;
             color: #991b1b;
-        }
-
-        html.dark .status-down {
-            background-color: #991b1b;
-            color: #fee2e2;
         }
 
         .status-pending {
@@ -94,19 +70,9 @@
             color: #92400e;
         }
 
-        html.dark .status-pending {
-            background-color: #92400e;
-            color: #fef3c7;
-        }
-
         .ssl-ok {
             background-color: #ecfdf5;
             color: #065f46;
-        }
-        
-        html.dark .ssl-ok {
-            background-color: #065f46;
-            color: #d1fae5;
         }
 
         .ssl-warning {
@@ -114,19 +80,9 @@
             color: #92400e;
         }
 
-        html.dark .ssl-warning {
-            background-color: #92400e;
-            color: #fef3c7;
-        }
-
         .ssl-error {
             background-color: #fef2f2;
             color: #991b1b;
-        }
-
-        html.dark .ssl-error {
-            background-color: #991b1b;
-            color: #fee2e2;
         }
         
         /* *** NEW: Toast Animation Styles *** */
@@ -166,21 +122,18 @@
     </style>
 </head>
 
-<body class="bg-white dark:bg-gray-900 flex flex-col min-h-screen">
+<body class="bg-white flex flex-col min-h-screen">
 
-    <nav class="bg-white dark:bg-gray-800 shadow-md">
+    <nav class="bg-white shadow-md">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
                 <div class="flex items-center">
                     <img src="/images/favicon-32x32.png" alt="SitePulse Logo" class="h-8 w-8">
-                    <span class="font-bold text-xl ml-3 text-gray-900 dark:text-white">SitePulse</span>
+                    <span class="font-bold text-xl ml-3 text-gray-900">SitePulse</span>
                 </div>
                 <div class="flex items-center">
-                    <span id="user-welcome" class="hidden sm:block text-sm text-gray-600 dark:text-gray-300 mr-4"></span>
-                    <button id="theme-toggle" class="text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-500 font-medium mr-4">
-                        <i class="fas fa-moon"></i>
-                    </button>
-                    <button id="logout-button" class="text-sm text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-500 font-medium">
+                    <span id="user-welcome" class="hidden sm:block text-sm text-gray-600 mr-4"></span>
+                    <button id="logout-button" class="text-sm text-gray-700 hover:text-red-600 font-medium">
                         <i class="fas fa-sign-out-alt mr-1"></i>Logout
                     </button>
                 </div>
@@ -189,18 +142,18 @@
     </nav>
 
     <main class="flex-grow max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 w-full">
-        <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md mb-8">
-            <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-4">Add New Monitor</h2>
+        <div class="bg-white p-6 rounded-xl shadow-md mb-8">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Add New Monitor</h2>
             <form id="add-monitor-form" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
                 <div class="md:col-span-2">
-                    <label for="website-url" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Website URL</label>
+                    <label for="website-url" class="block text-sm font-medium text-gray-700">Website URL</label>
                     <input type="url" id="website-url" placeholder="https://your-website.com" required
-                        class="mt-1 block w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition text-gray-900 dark:text-white">
+                        class="mt-1 block w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition">
                 </div>
                 <div>
-                    <label for="keyword" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Keyword (Optional)</label>
+                    <label for="keyword" class="block text-sm font-medium text-gray-700">Keyword (Optional)</label>
                     <input type="text" id="keyword" placeholder="e.g. 'Welcome'"
-                        class="mt-1 block w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition text-gray-900 dark:text-white">
+                        class="mt-1 block w-full px-4 py-2 bg-gray-50 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition">
                 </div>
                 <div class="text-right">
                     <button type="submit"
@@ -211,23 +164,24 @@
             </form>
             <div id="form-message-area" class="mt-3 text-red-600"></div>
         </div>
+
         <div id="monitors-container">
             <div class="flex justify-between items-center mb-4">
-                <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Your Monitors</h1>
+                <h1 class="text-2xl font-bold text-gray-900">Your Monitors</h1>
             </div>
             <div id="loading-state" class="text-center py-12">
                 <i class="fas fa-spinner fa-spin text-4xl text-gray-400"></i>
-                <p class="mt-3 text-gray-600 dark:text-gray-400">Loading your monitors...</p>
+                <p class="mt-3 text-gray-600">Loading your monitors...</p>
             </div>
-            <div id="empty-state" class="hidden text-center py-12 bg-white dark:bg-gray-800 shadow-md rounded-xl">
+            <div id="empty-state" class="hidden text-center py-12 bg-white shadow-md rounded-xl">
                 <i class="fas fa-eye-slash text-5xl text-gray-400 mb-4"></i>
-                <h3 class="text-xl font-semibold text-gray-700 dark:text-gray-200">No monitors yet</h3>
-                <p class="text-gray-500 dark:text-gray-400 mt-1">Add your first site to begin monitoring.</p>
+                <h3 class="text-xl font-semibold text-gray-700">No monitors yet</h3>
+                <p class="text-gray-500 mt-1">Add your first site to begin monitoring.</p>
             </div>
             <div id="monitors-list" class="space-y-4"></div>
         </div>
     </main>
-
+    
     <div id="toast-notification" class="toast bg-gray-800 text-white py-3 px-5 rounded-lg shadow-lg">
         <p id="toast-message"></p>
     </div>
@@ -235,12 +189,12 @@
     <div id="history-modal" class="modal">
         <div class="modal-content">
             <div class="flex justify-between items-center mb-4">
-                <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-100">History for <span id="modal-monitor-url"
+                <h2 class="text-xl font-semibold text-gray-800">History for <span id="modal-monitor-url"
                         class="font-bold"></span></h2>
-                <button id="close-modal-button" class="text-gray-500 hover:text-gray-800 dark:text-gray-300 dark:hover:text-white text-2xl">&times;</button>
+                <button id="close-modal-button" class="text-gray-500 hover:text-gray-800 text-2xl">&times;</button>
             </div>
             <div id="history-content" class="relative" style="height: 400px;">
-                <div id="chart-loading" class="absolute inset-0 flex items-center justify-center bg-white dark:bg-gray-800">
+                <div id="chart-loading" class="absolute inset-0 flex items-center justify-center bg-white">
                     <i class="fas fa-spinner fa-spin text-3xl text-gray-400"></i>
                 </div>
                 <canvas id="uptime-chart"></canvas>
@@ -254,12 +208,12 @@
                 <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
                     <i class="fas fa-exclamation-triangle text-red-600 text-xl"></i>
                 </div>
-                <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100 mt-4">Delete Monitor</h3>
+                <h3 class="text-lg leading-6 font-medium text-gray-900 mt-4">Delete Monitor</h3>
                 <div class="mt-2 px-7 py-3">
-                    <p id="delete-confirm-message" class="text-sm text-gray-500 dark:text-gray-400"></p>
+                    <p id="delete-confirm-message" class="text-sm text-gray-500"></p>
                 </div>
                 <div class="mt-5 flex justify-center space-x-4">
-                    <button id="cancel-delete-button" class="w-full inline-flex justify-center rounded-md border border-gray-300 dark:border-gray-600 shadow-sm px-4 py-2 bg-white dark:bg-gray-700 text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 sm:w-auto sm:text-sm">
+                    <button id="cancel-delete-button" class="w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 sm:w-auto sm:text-sm">
                       Cancel
                     </button>
                     <button id="confirm-delete-button" type="button" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:w-auto sm:text-sm">
@@ -267,31 +221,6 @@
                     </button>
                   </div>
             </div>
-        </div>
-    </div>
-
-    <div id="maintenance-modal" class="modal">
-        <div class="modal-content" style="max-width: 500px;">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-100">Schedule Maintenance</h2>
-                <button id="close-maintenance-modal" class="text-gray-500 hover:text-gray-800 dark:text-gray-300 dark:hover:text-white text-2xl">&times;</button>
-            </div>
-            <form id="maintenance-form">
-                <input type="hidden" id="maintenance-monitor-id">
-                <div class="space-y-4">
-                    <div>
-                        <label for="start-time" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Start Time</label>
-                        <input type="datetime-local" id="start-time" required class="mt-1 block w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-gray-900 dark:text-white">
-                    </div>
-                    <div>
-                        <label for="end-time" class="block text-sm font-medium text-gray-700 dark:text-gray-300">End Time</label>
-                        <input type="datetime-local" id="end-time" required class="mt-1 block w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-gray-900 dark:text-white">
-                    </div>
-                </div>
-                <div class="mt-6">
-                    <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300">Schedule</button>
-                </div>
-            </form>
         </div>
     </div>
 
@@ -328,7 +257,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
-        import { getFirestore, collection, query, where, onSnapshot, addDoc, serverTimestamp, getDocs, orderBy, limit, doc, deleteDoc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+        import { getFirestore, collection, query, where, onSnapshot, addDoc, serverTimestamp, getDocs, orderBy, limit, doc, deleteDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyD-hl1Z4xs0QBi6TRbEqCEPzymF-Hp_5VY",
@@ -349,7 +278,6 @@
         const emptyState = document.getElementById('empty-state');
         const userWelcomeEl = document.getElementById('user-welcome');
         const logoutButton = document.getElementById('logout-button');
-        const themeToggleButton = document.getElementById('theme-toggle');
         const addMonitorForm = document.getElementById('add-monitor-form');
         const formMessageArea = document.getElementById('form-message-area');
         const historyModal = document.getElementById('history-modal');
@@ -360,40 +288,10 @@
         const deleteConfirmMessage = document.getElementById('delete-confirm-message');
         const cancelDeleteButton = document.getElementById('cancel-delete-button');
         const confirmDeleteButton = document.getElementById('confirm-delete-button');
-        const maintenanceModal = document.getElementById('maintenance-modal');
-        const closeMaintenanceModal = document.getElementById('close-maintenance-modal');
-        const maintenanceForm = document.getElementById('maintenance-form');
 
         let currentUser;
         let unsubscribe;
         let uptimeChart = null;
-
-        // Dark Mode Logic
-        const applyTheme = (theme) => {
-            const icon = themeToggleButton.querySelector('i');
-            if (theme === 'dark') {
-                document.documentElement.classList.add('dark');
-                icon.classList.remove('fa-moon');
-                icon.classList.add('fa-sun');
-            } else {
-                document.documentElement.classList.remove('dark');
-                icon.classList.remove('fa-sun');
-                icon.classList.add('fa-moon');
-            }
-        };
-
-        const toggleTheme = () => {
-            const currentTheme = localStorage.getItem('theme') || 'light';
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            localStorage.setItem('theme', newTheme);
-            applyTheme(newTheme);
-        };
-        
-        themeToggleButton.addEventListener('click', toggleTheme);
-
-        // Apply theme on initial load
-        applyTheme(localStorage.getItem('theme') || 'light');
-
 
         logoutButton.addEventListener('click', () => {
             sessionStorage.removeItem('welcomeMessageShown'); 
@@ -413,8 +311,7 @@
                     status: "PENDING",
                     createdAt: serverTimestamp(),
                     lastChecked: null,
-                    lastResponseTime: null,
-                    isPublic: false
+                    lastResponseTime: null
                 });
                 addMonitorForm.reset();
                 formMessageArea.textContent = "";
@@ -427,7 +324,6 @@
         monitorsListContainer.addEventListener('click', (e) => {
             const historyButton = e.target.closest('.view-history-button');
             const deleteButton = e.target.closest('.delete-monitor-button');
-            const maintenanceButton = e.target.closest('.schedule-maintenance-button');
 
             if (historyButton) {
                 handleHistoryButtonClick(historyButton.dataset.id, historyButton.dataset.url);
@@ -436,65 +332,15 @@
             if (deleteButton) {
                 handleDeleteButtonClick(deleteButton.dataset.id, deleteButton.dataset.url);
             }
-
-            if (maintenanceButton) {
-                document.getElementById('maintenance-monitor-id').value = maintenanceButton.dataset.id;
-                maintenanceModal.style.display = 'block';
-            }
-        });
-
-        monitorsListContainer.addEventListener('change', async (e) => {
-            if (e.target.classList.contains('public-toggle')) {
-                const monitorId = e.target.dataset.id;
-                const isPublic = e.target.checked;
-                const monitorRef = doc(db, "monitors", monitorId);
-                try {
-                    await updateDoc(monitorRef, { isPublic });
-                    showToast(`Status page is now ${isPublic ? 'public' : 'private'}.`);
-                    // Re-fetch to update the card with the view link
-                    fetchMonitors(currentUser.uid);
-                } catch (error) {
-                    console.error("Error updating public status:", error);
-                    showToast("Failed to update public status.", true);
-                }
-            }
         });
         
         closeModalButton.addEventListener('click', () => historyModal.style.display = 'none');
         cancelDeleteButton.addEventListener('click', () => deleteConfirmModal.style.display = 'none');
         confirmDeleteButton.addEventListener('click', handleDeleteConfirmation);
-        closeMaintenanceModal.addEventListener('click', () => maintenanceModal.style.display = 'none');
-
-        maintenanceForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const monitorId = document.getElementById('maintenance-monitor-id').value;
-            const startTime = new Date(document.getElementById('start-time').value);
-            const endTime = new Date(document.getElementById('end-time').value);
-
-            if (startTime >= endTime) {
-                showToast("End time must be after start time.", true);
-                return;
-            }
-
-            try {
-                const maintenanceRef = collection(db, `monitors/${monitorId}/maintenance`);
-                await addDoc(maintenanceRef, {
-                    start: startTime,
-                    end: endTime
-                });
-                showToast("Maintenance window scheduled.");
-                maintenanceModal.style.display = 'none';
-            } catch (error) {
-                console.error("Error scheduling maintenance:", error);
-                showToast("Failed to schedule maintenance.", true);
-            }
-        });
-
 
         window.addEventListener('click', (event) => {
             if (event.target == historyModal) historyModal.style.display = 'none';
             if (event.target == deleteConfirmModal) deleteConfirmModal.style.display = 'none';
-            if (event.target == maintenanceModal) maintenanceModal.style.display = 'none';
         });
 
         onAuthStateChanged(auth, async user => {
@@ -516,6 +362,7 @@
             }
         });
 
+        // *** UPDATED: showToast Function for Animation ***
         function showToast(message, isError = false) {
             const toast = document.getElementById('toast-notification');
             const toastMessage = document.getElementById('toast-message');
@@ -618,7 +465,7 @@
             else if (statusText === 'DOWN') { statusClass = 'status-down'; statusIcon = 'fa-times-circle'; }
 
             const lastChecked = monitor.lastChecked?.toDate ? monitor.lastChecked.toDate().toLocaleString() : 'Never';
-            const keywordText = monitor.keyword ? `<div class="mt-1"><span class="text-xs inline-block bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-200 px-2 py-1 rounded-full">Keyword: "${monitor.keyword}"</span></div>` : '';
+            const keywordText = monitor.keyword ? `<div class="mt-1"><span class="text-xs inline-block bg-gray-200 text-gray-700 px-2 py-1 rounded-full">Keyword: "${monitor.keyword}"</span></div>` : '';
             
             let sslText = 'SSL: N/A';
             let sslClass = 'status-pending';
@@ -634,55 +481,39 @@
                     sslClass = 'ssl-ok';
                 }
             }
-            
-            const isPublic = monitor.isPublic || false;
-            const publicToggleHTML = `
-                <div class="flex items-center mt-4">
-                    <span class="text-sm font-medium text-gray-700 dark:text-gray-300 mr-3">Public Status Page</span>
-                    <label for="public-toggle-${id}" class="inline-flex relative items-center cursor-pointer">
-                        <input type="checkbox" value="" id="public-toggle-${id}" class="sr-only peer public-toggle" data-id="${id}" ${isPublic ? 'checked' : ''}>
-                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-red-300 dark:peer-focus:ring-red-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-red-600"></div>
-                    </label>
-                    ${isPublic ? `<a href="/status?id=${id}" target="_blank" class="ml-4 text-blue-600 hover:underline text-sm">View Page</a>` : ''}
-                </div>
-            `;
 
             return `
-                <div class="bg-white dark:bg-gray-800 shadow-md rounded-xl p-5 flex flex-col gap-4 transition hover:shadow-lg">
-                    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-                        <div class="flex-grow">
-                            <div class="flex items-center gap-3">
-                                <i class="fas ${statusIcon} ${statusClass.replace('status-', 'text-')} text-2xl"></i>
-                                <div>
-                                    <a href="${monitor.url}" target="_blank" rel="noopener noreferrer" class="font-semibold text-lg text-gray-900 dark:text-white break-all hover:underline">${monitor.url}</a>
-                                    <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                                        <i class="far fa-clock mr-1"></i>Last check: ${lastChecked}
-                                    </p>
-                                </div>
+                <div class="bg-white shadow-md rounded-xl p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 transition hover:shadow-lg">
+                    <div class="flex-grow">
+                        <div class="flex items-center gap-3">
+                            <i class="fas ${statusIcon} ${statusClass.replace('status-', 'text-')} text-2xl"></i>
+                            <div>
+                                <a href="${monitor.url}" target="_blank" rel="noopener noreferrer" class="font-semibold text-lg text-gray-900 break-all hover:underline">${monitor.url}</a>
+                                <p class="text-sm text-gray-500 mt-1">
+                                    <i class="far fa-clock mr-1"></i>Last check: ${lastChecked}
+                                </p>
                             </div>
-                            ${keywordText}
                         </div>
-                        <div class="flex-shrink-0 flex flex-col sm:items-end gap-3 w-full sm:w-auto mt-4 sm:mt-0">
-                            <div class="flex gap-2">
-                                <span class="status-badge ${statusClass}">${statusText}</span>
-                                <span class="status-badge ${sslClass}">${sslText}</span>
-                            </div>
-                            <div class="flex items-center gap-2 w-full">
-                               <button data-id="${id}" data-url="${monitor.url}" class="view-history-button w-full sm:w-auto bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 font-semibold py-2 px-4 rounded-lg text-sm transition">History</button>
-                               <a href="${monitor.url}" target="_blank" rel="noopener noreferrer" class="w-full sm:w-auto text-center bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg text-sm transition">Visit</a>
-                               <button data-id="${id}" class="schedule-maintenance-button w-full sm:w-auto bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-4 rounded-lg text-sm transition">Maintenance</button>
-                               <button data-id="${id}" data-url="${monitor.url}" class="delete-monitor-button text-gray-400 hover:text-red-600 w-10 h-10 flex-shrink-0 flex items-center justify-center rounded-lg transition"><i class="fas fa-trash-alt"></i></button>
-                            </div>
+                        ${keywordText}
+                    </div>
+
+                    <div class="flex-shrink-0 flex flex-col sm:items-end gap-3 w-full sm:w-auto mt-4 sm:mt-0">
+                        <div class="flex gap-2">
+                            <span class="status-badge ${statusClass}">${statusText}</span>
+                            <span class="status-badge ${sslClass}">${sslText}</span>
+                        </div>
+                        <div class="flex items-center gap-2 w-full">
+                           <button data-id="${id}" data-url="${monitor.url}" class="view-history-button w-full sm:w-auto bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-lg text-sm transition">History</button>
+                           <a href="${monitor.url}" target="_blank" rel="noopener noreferrer" class="w-full sm:w-auto text-center bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg text-sm transition">Visit</a>
+                           <button data-id="${id}" data-url="${monitor.url}" class="delete-monitor-button text-gray-400 hover:text-red-600 w-10 h-10 flex-shrink-0 flex items-center justify-center rounded-lg transition"><i class="fas fa-trash-alt"></i></button>
                         </div>
                     </div>
-                    ${publicToggleHTML}
                 </div>
             `;
         }
         
         function renderUptimeChart(data) {
             const ctx = document.getElementById('uptime-chart').getContext('2d');
-            const isDarkMode = document.documentElement.classList.contains('dark');
             if (uptimeChart) {
                 uptimeChart.destroy();
             }
@@ -712,22 +543,14 @@
                             },
                             title: {
                                 display: true,
-                                text: 'Time',
-                                color: isDarkMode ? '#d1d5db' : '#374151'
-                            },
-                            ticks: {
-                                color: isDarkMode ? '#d1d5db' : '#374151'
+                                text: 'Time'
                             }
                         },
                         y: {
                             beginAtZero: true,
                             title: {
                                 display: true,
-                                text: 'Response Time (ms)',
-                                color: isDarkMode ? '#d1d5db' : '#374151'
-                            },
-                            ticks: {
-                                color: isDarkMode ? '#d1d5db' : '#374151'
+                                text: 'Response Time (ms)'
                             }
                         }
                     },
@@ -748,11 +571,6 @@
                                     return `Status: ${context.raw.status}`;
                                 }
                             }
-                        },
-                        legend: {
-                            labels: {
-                                color: isDarkMode ? '#d1d5db' : '#374151'
-                            }
                         }
                     }
                 }
@@ -760,4 +578,5 @@
         }
     </script>
 </body>
+
 </html>
