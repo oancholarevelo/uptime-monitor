@@ -147,16 +147,9 @@
         </div>
     </main>
     
-    <div id="welcome-modal" class="modal">
-        <div class="modal-content">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-xl font-semibold text-gray-800">Welcome, <span id="modal-user-name" class="font-bold"></span>!</h2>
-                <button id="close-welcome-modal-button" class="text-gray-500 hover:text-gray-800 text-2xl">&times;</button>
-            </div>
-            <div id="modal-status-update"></div>
-        </div>
+    <div id="toast-notification" class="fixed top-5 right-5 bg-gray-800 text-white py-3 px-5 rounded-lg shadow-lg" style="display: none; z-index: 1000;">
+        <p id="toast-message"></p>
     </div>
-
 
     <div id="history-modal" class="modal">
         <div class="modal-content">
@@ -234,23 +227,20 @@
         const modalMonitorUrl = document.getElementById('modal-monitor-url');
         const closeModalButton = document.getElementById('close-modal-button');
         const chartLoading = document.getElementById('chart-loading');
-        
-        const welcomeModal = document.getElementById('welcome-modal');
-        const modalUserName = document.getElementById('modal-user-name');
-        const modalStatusUpdate = document.getElementById('modal-status-update');
-        const closeWelcomeModalButton = document.getElementById('close-welcome-modal-button');
 
         let currentUser;
         let unsubscribe;
         let uptimeChart = null;
 
-        logoutButton.addEventListener('click', () => signOut(auth));
+        logoutButton.addEventListener('click', () => {
+            sessionStorage.removeItem('welcomeMessageShown'); // Clear session storage on logout
+            signOut(auth);
+        });
+
         closeModalButton.addEventListener('click', () => historyModal.style.display = 'none');
-        closeWelcomeModalButton.addEventListener('click', () => welcomeModal.style.display = 'none');
         window.addEventListener('click', (event) => {
-            if (event.target == historyModal || event.target == welcomeModal) {
+            if (event.target == historyModal) {
                 historyModal.style.display = 'none';
-                welcomeModal.style.display = 'none';
             }
         });
 
@@ -260,14 +250,18 @@
                 const userDocRef = doc(db, "users", user.uid);
                 const userDoc = await getDoc(userDocRef);
                 if (userDoc.exists()) {
-                    const userData = userDoc.data();
-                    userWelcomeEl.textContent = `Hi, ${userData.name}!`;
-                    modalUserName.textContent = userData.name;
+                    userWelcomeEl.textContent = `Hi, ${userDoc.data().name}!`;
                 } else {
-                    userWelcomeEl.textContent = `Hi, ${user.displayName}!`;
-                    modalUserName.textContent = user.displayName;
+                    userWelcomeEl.textContent = `Hi, ${user.displayName || 'User'}!`;
                 }
-                fetchMonitors(user.uid);
+                
+                const welcomeMessageShown = sessionStorage.getItem('welcomeMessageShown');
+                if (!welcomeMessageShown) {
+                    fetchMonitors(user.uid, true); // Show notification on first load of session
+                    sessionStorage.setItem('welcomeMessageShown', 'true');
+                } else {
+                    fetchMonitors(user.uid, false); // Don't show notification on reload
+                }
             } else {
                 window.location.href = '/login';
             }
@@ -297,34 +291,47 @@
             }
         });
 
-        function fetchMonitors(userId) {
+        function showToast(message, isError = false) {
+            const toast = document.getElementById('toast-notification');
+            const toastMessage = document.getElementById('toast-message');
+
+            toastMessage.textContent = message;
+            toast.style.backgroundColor = isError ? '#ef4444' : '#2dd4bf'; // Red for error, Teal for success
+            toast.style.display = 'block';
+
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 5000); // Hide after 5 seconds
+        }
+
+        function fetchMonitors(userId, showNotification = false) {
             if (unsubscribe) unsubscribe();
             loadingState.style.display = 'block';
             emptyState.style.display = 'none';
             monitorsListContainer.innerHTML = '';
             const q = query(collection(db, "monitors"), where("userId", "==", userId), orderBy("createdAt", "desc"));
+            
             unsubscribe = onSnapshot(q, (snapshot) => {
                 loadingState.style.display = 'none';
                 monitorsListContainer.innerHTML = '';
                 emptyState.style.display = snapshot.empty ? 'block' : 'none';
 
-                let downSites = [];
+                let downSites = 0;
                 snapshot.docs.forEach(doc => {
                     const monitor = doc.data();
                     if (monitor.status === 'DOWN') {
-                        downSites.push(monitor.url);
+                        downSites++;
                     }
                     monitorsListContainer.innerHTML += createMonitorCard(doc.id, monitor);
                 });
 
-                if (downSites.length > 0) {
-                    modalStatusUpdate.innerHTML = `<p class="text-red-600">You have ${downSites.length} site(s) currently down:</p>
-                                                   <ul class="list-disc list-inside mt-2">${downSites.map(url => `<li>${url}</li>`).join('')}</ul>`;
-                } else {
-                    modalStatusUpdate.innerHTML = `<p class="text-green-600">All your sites are up!</p>`;
+                if (showNotification && !snapshot.empty) {
+                    if (downSites > 0) {
+                        showToast(`You have ${downSites} site(s) currently down.`, true);
+                    } else {
+                        showToast("All your monitored sites are up!");
+                    }
                 }
-                
-                welcomeModal.style.display = 'block';
 
             }, (error) => {
                 console.error("Error fetching monitors:", error);
@@ -407,7 +414,7 @@
 
                 if (logSnapshot.empty) {
                     chartLoading.style.display = 'block';
-                    chartLoading.textContent = 'No history records found.';
+                    chartLoading.innerHTML = '<p>No history records found.</p>';
                     document.getElementById('uptime-chart').style.display = 'none';
                     return;
                 }
